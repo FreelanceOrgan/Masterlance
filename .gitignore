@@ -1,0 +1,6 @@
+access.log
+config.env
+notes.txt
+.eslintrc.json
+uploads/
+node_modules/

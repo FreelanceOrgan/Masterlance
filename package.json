@@ -1,0 +1,48 @@
+{
+  "name": "masterlance",
+  "version": "1.0.0",
+  "description": "EazyMart is an online electronic commerce system",
+  "main": "server.js",
+  "engines": {
+    "node": ">=14 <15"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Tarek Eslam",
+  "license": "ISC",
+  "dependencies": {
+    "@alec016/mongoose-autoincrement": "^1.5.1",
+    "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "express-compression": "^1.0.2",
+    "express-validator": "^7.0.1",
+    "firebase": "^10.1.0",
+    "jsonwebtoken": "^9.0.1",
+    "mongoose": "^7.4.1",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.4",
+    "sharp": "^0.32.4",
+    "slugify": "^1.6.6",
+    "stripe": "^13.4.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-react": "^7.33.2",
+    "flag": "^5.0.1",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.3"
+  }
+}
