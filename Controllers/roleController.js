@@ -20,7 +20,7 @@ exports.addRole = addDocument(roleModel, 'Role');
 // @desc    Update role
 // @route   PATCH /api/v1/role/:id
 // @access  Private
-const feildsThatAllowToUpdate = ["name", "allowedModels", "available", "deleted"];
+const feildsThatAllowToUpdate = ["name", "allowedModels", "available"];
 exports.updateRole = updateDocument(roleModel, 'Role', ...feildsThatAllowToUpdate);
 
 // @desc    Delete role

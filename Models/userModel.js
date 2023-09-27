@@ -4,7 +4,6 @@ const bcrypt = require("bcrypt");
 
 const salt = bcrypt.genSaltSync(+process.env.salt_round);
 const AutoIncrement = require('../Config/autoIncrementInitialization');
-const addressSchema = require("./addressModel");
 
 const resetPasswordCode = mongoose.Schema(
     {
@@ -64,27 +63,23 @@ const userSchema = mongoose.Schema(
         },
         timeZone: {
             type: String,
-            required: [true, 'Timezone is required'],
+            // required: [true, 'Timezone is required'],
             // match: /^/
+        },
+        profileImage: {
+            type: String,
+            default: "https://cdn-icons-png.flaticon.com/512/236/236831.png"
+        },
+        role: {
+            type: Number,
+            ref: 'roles',
+            required: [true, 'Any user must have a role']
         },
         resetPasswordCode: {
             type: resetPasswordCode
         },
         passwordUpdatedTime: {
             type: Date
-        },
-        profileImage: {
-            type: String,
-            default: "https://placehold.co/600x400.png"
-        },
-        addresses: {
-            type: [addressSchema],
-            default: []
-        },
-        role: {
-            type: Number,
-            ref: 'roles',
-            required: [true, 'Any user must have a role']
         },
         available: {
             type: Boolean,

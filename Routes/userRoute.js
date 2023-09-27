@@ -5,22 +5,20 @@ const {getAllUsers, getUserById, addUser, updateUser, updateUserRole, blockUser,
 const {idValidation} = require("../Middlewares/idValidation")
 const {addUserValidation, updateUserValidation, changeEmailValidation, changePasswordValidation} = require("../Middlewares/userValidation")
 const {uploadImageList, toFirebase} = require("../uploadFiles/uploadImage");
-const {authontication, authorization, preventClientRole, checkParamIdEqualTokenId} = require("../Services/authService");
-const addressRoute = require("./addressRoute");
+const {authentication, authorization, preventClientRole, checkParamIdEqualTokenId} = require("../Services/authService");
 
-router.use("/:userId/address", addressRoute);
 
 const uploadFiles = [{name: "profileImage", maxCount: 1}];
 
 router.route("/")
-    .all(authontication, authorization("users"), preventClientRole)
+    .all(authentication, authorization("users"), preventClientRole)
     .get(getAllUsers)
     .post(addUserValidation, addUser)
 
 router.route("/:id")
-    .all(authontication, authorization("users"), idValidation, checkParamIdEqualTokenId)
+    .all(authentication, authorization("users"), idValidation, checkParamIdEqualTokenId)
     .get(getUserById)
-    .patch(uploadImageList(uploadFiles), toFirebase(uploadFiles, "user", "users"), updateUserValidation, updateUser)
+    .patch(/*uploadImageList(uploadFiles), toFirebase(uploadFiles, "user", "users"),*/ updateUserValidation, updateUser)
     .delete(preventClientRole, deleteUser)
 
 router.route("/:id/changeemail")
@@ -30,10 +28,10 @@ router.route("/:id/changepassword")
     .patch(changePasswordValidation, changePassword);
 
 router.route("/:id/role")
-    .patch(authontication, authorization("users"), preventClientRole, idValidation, updateUserValidation, updateUserRole);
+    .patch(authentication, authorization("users"), preventClientRole, idValidation, updateUserValidation, updateUserRole);
 
 router.route("/:id/block")
-    .patch(authontication, authorization("users"), preventClientRole, idValidation, updateUserValidation, blockUser);
+    .patch(authentication, authorization("users"), preventClientRole, idValidation, updateUserValidation, blockUser);
 
 
 module.exports = router;

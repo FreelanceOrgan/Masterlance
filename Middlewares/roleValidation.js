@@ -1,7 +1,8 @@
 const {check} = require("express-validator");
 const errorExpressValidatorHandler = require("../ErrorHandler/errorExpressValidatorHandler");
+const roleModel = require("../Models/roleModel");
 
-const validModels = ['categories', 'subcategories', 'brands', 'products', 'roles', 'wishlists', 'coupons', 'orders', 'reviews', 'users'];
+const validModels = [ 'roles', 'users'];
 const validPermissions = ['get', 'post', 'patch', 'put', 'delete'];
 
 exports.addRoleValidation = [
@@ -68,11 +69,29 @@ exports.updateRoleValidation = [
 
     check("available")
         .optional()
-        .isBoolean().withMessage("Available must be boolean"),
-
+        .isBoolean().withMessage("Available must be boolean")
+        .custom(async (value, {req}) => {
+            if(value) {
+                const role = await roleModel.findById(req.params.id);
+                if(role.slug === "client") {
+                    throw new Error("You can not block client role because all the system depends on this role")
+                }
+            }
+            return true;
+        }),
+    
     check("deleted")
         .optional()
-        .isBoolean().withMessage("Deleted must be boolean"),
+        .isBoolean().withMessage("Deleted must be boolean")
+        .custom(async (value, {req}) => {
+            if(value) {
+                const role = await roleModel.findById(req.params.id);
+                if(role.slug === "client") {
+                    throw new Error("You can not delete client role because all the system depends on this role")
+                }
+            }
+            return true;
+        }),
 		
 	errorExpressValidatorHandler,
 ]

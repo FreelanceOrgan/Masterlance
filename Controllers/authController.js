@@ -35,7 +35,7 @@ exports.login = asyncHandler(async (request, response, next) => {
             {
                 user: {
                     _id: user._id,
-                    name: `${user.firstName} ${user.lastName}`,
+                    name: `${user.fullName}`,
                     email: user.email,
                     role: user.role.name
                 }, 
@@ -55,15 +55,15 @@ exports.forgetPassword = asyncHandler(async (request, response, next) => {
         try {
             const resetCode = Math.floor(100000 + Math.random() * 900000);
             const message = `
-            <h3>Hi ${user.firstName} ${user.lastName}</h3>
-            <p>We received a request to reset your password on your Masterlance account.</p>
-            <p>This is your reset password code</p
+            <h3 style="color: black">Hi ${user.fullName}</h3>
+            <p style="color: black">We received a request to reset your password on your Masterlance account.</p>
+            <p style="color: black">This is your reset password code</p
             <strong style="font-size: 18px">${resetCode}</strong>
-            <p>Enter this code to complete the reset</p>
-            <p>Thanks for helping us keep your account secure.</p>
-            <p>Masterlance Team</p>
+            <p style="color: black">Enter this code to complete the reset</p>
+            <p style="color: black">Thanks for helping us keep your account secure.</p>
+            <p style="color: black">Masterlance Team</p>
             `
-            await sendEmail({email: user.email, subject: "Reset Password Code", message: message});
+            sendEmail({email: user.email, subject: "Reset Password Code", message: message});
 
             user.resetPasswordCode = {
                 code: resetCode,

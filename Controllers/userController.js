@@ -24,7 +24,7 @@ exports.addUser = addDocument(userModel, 'User');
 // @desc    Update User
 // @route   PATCH /api/v1/user/:id
 // @access  Private
-const feildsThatAllowToUpdate = ["firstName", "lastName", "profileImage", "mobilePhone", "available"];
+const feildsThatAllowToUpdate = ["fullName", "lastName", "profileImage", "mobilePhone", "available"];
 exports.updateUser = updateDocument(userModel, 'User', ...feildsThatAllowToUpdate);
 
 // @desc    Update User

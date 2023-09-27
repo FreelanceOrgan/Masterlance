@@ -8,7 +8,7 @@ const allowedModelSchema = new mongoose.Schema(
             type: String,
             required: [true, "Any role must have one controlled model at least"],
             lowercase: true,
-            enum: ['categories', 'subcategories', 'brands', 'products', 'roles', 'wishlists', 'coupons', 'orders', 'reviews', 'users']
+            enum: [ 'roles', 'users']
         },
         permissions: [{
             type: String,

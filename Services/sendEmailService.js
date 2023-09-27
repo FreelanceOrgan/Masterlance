@@ -15,7 +15,7 @@ exports.sendEmail = asyncHandler(async (options) => {
     });
 
     const mailOptions = {
-        from: `E-shop <${process.env.auth_user}>`,
+        from: `Masterlance <${process.env.auth_user}>`,
         to: options.email,
         subject: options.subject,
         html: options.message
