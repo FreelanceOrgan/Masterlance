@@ -7,6 +7,8 @@ const logger = require("./logger");
 const globalErrorHandler = require("./ErrorHandler/globalErrorHandler")
 const routesMounting = require("./routesMounting");
 const notFoundRoutesHandler = require("./ErrorHandler/notFoundRoutesHandler")
+const APIError = require("./ErrorHandler/APIError");
+
 
 //For deploy on render 
 if (!String.prototype.replaceAll) {
@@ -34,7 +36,9 @@ app.use(logger());
 
 routesMounting(app, process.env.apiVersion);
 
-app.all('*', notFoundRoutesHandler);
+app.all('*', (request, response, next) => {
+    next(new APIError(`This route is not found: ${request.originalUrl}`, 400))
+});
 
 app.use(globalErrorHandler);
 
