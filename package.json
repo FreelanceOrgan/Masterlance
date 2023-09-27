@@ -1,13 +1,16 @@
 {
   "name": "masterlance",
   "version": "1.0.0",
-  "description": "Masterlance is an a mobile app for manage freelance platforms through",
+  "description": "masterlance",
   "main": "server.js",
+  "engines": {
+    "node": ">=14 <15"
+  },
   "scripts": {
     "start": "node server.js"
   },
   "keywords": [],
-  "author": "Hany Mahdy",
+  "author": "Tarek Eslam",
   "license": "ISC",
   "dependencies": {
     "@alec016/mongoose-autoincrement": "^1.5.1",
