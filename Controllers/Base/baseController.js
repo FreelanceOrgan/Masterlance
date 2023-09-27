@@ -6,9 +6,9 @@ const {filter, select, sort, pagination} = require("../../Shared/queryRequest");
 
 exports.getAllDocuments = (model, modelName = 'Items', ...searchFields) => 
     asyncHandler(async (request, response) => {
-        const filtedFields = filter(request, ...searchFields);
-        const {page, limit, skip, totalPages} = await pagination(request, await model.countDocuments(filtedFields));
-        const AllDocuments = await model.find(filtedFields, select(request)).skip(skip).limit(limit).sort(sort(request));
+        const filterFields = filter(request, ...searchFields);
+        const {page, limit, skip, totalPages} = await pagination(request, await model.countDocuments(filterFields));
+        const AllDocuments = await model.find(filterFields, select(request)).skip(skip).limit(limit).sort(sort(request));
         if(AllDocuments.length > 0) {
             response.status(200).json(responseFormatter(true, `All ${modelName} are retrieved successfully`, AllDocuments, page, limit, totalPages));
         }

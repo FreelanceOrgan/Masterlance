@@ -16,7 +16,7 @@ router.route("/")
     .post(addUserValidation, addUser)
 
 router.route("/:id")
-    .all(authentication, authorization("users"), idValidation, checkParamIdEqualTokenId)
+    .all(authentication, authorization("users"), idValidation, checkParamIdEqualTokenId("id"))
     .get(getUserById)
     .patch(/*uploadImageList(uploadFiles), toFirebase(uploadFiles, "user", "users"),*/ updateUserValidation, updateUser)
     .delete(preventClientRole, deleteUser)
