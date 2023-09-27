@@ -1,4 +1,5 @@
 const {check} = require("express-validator");
+const slugify = require("slugify")
 const errorExpressValidatorHandler = require("../ErrorHandler/errorExpressValidatorHandler");
 const roleModel = require("../Models/roleModel");
 
@@ -10,13 +11,19 @@ exports.addRoleValidation = [
 		.notEmpty().withMessage("Role name is required")
 		.isString().withMessage("Role Name must be string")
 		.isLength({min: 3}).withMessage("Too short role name, 3 characters at least")
-		.isLength({max: 32}).withMessage("Too long role name, 32 characters at most"),
+		.isLength({max: 32}).withMessage("Too long role name, 32 characters at most")
+        .custom(async value => {
+            const role = await roleModel.findOne({slug: slugify(value)}, {_id: 1});
+            if(role) {
+                throw new Error('This role name already exists')
+            }
+            return true
+        }),
 
     check("allowedModels")
         .isArray({min: 1}).withMessage("Any role must have one controlled model at least")
         .customSanitizer((allowedModels) => [...new Map(allowedModels.map(obj => [JSON.stringify(obj).toLowerCase(), obj])).values()])
         .custom(allowedModels => {
-            // eslint-disable-next-line no-restricted-syntax
             for(const model of allowedModels) {
                 if(!model.modelName || !validModels.includes(model.modelName.toLowerCase())) {
                     throw new Error(`Invalid model: ${model.modelName}`);
@@ -24,7 +31,6 @@ exports.addRoleValidation = [
                 if(!model.permissions || model.permissions.length === 0) {
                     throw new Error('Any model must has one permission at least');
                 }
-                // eslint-disable-next-line no-restricted-syntax
                 for(const permission of model.permissions) {
                     if(!validPermissions.includes(permission.toLowerCase())) {
                         throw new Error(`Invalid permission: ${permission}`);
@@ -42,14 +48,20 @@ exports.updateRoleValidation = [
 		.optional()
 		.isString().withMessage("Role name must be string")
 		.isLength({min: 3}).withMessage("Too short role name, 3 characters at least")
-		.isLength({max: 32}).withMessage("Too long role name, 32 characters at most"),
+		.isLength({max: 32}).withMessage("Too long role name, 32 characters at most")
+        .custom(async (value, {req}) => {
+            const role = await roleModel.findOne({slug: slugify(value)}, {_id: 1});
+            if(role && +req.params.id !== role._id) {
+                throw new Error('This role name already exists')
+            }
+            return true
+        }),
 
     check("allowedModels")
         .optional()
         .isArray({min: 1}).withMessage("Any role must have one controlled model at least")
         .customSanitizer((allowedModels) => [...new Map(allowedModels.map(obj => [JSON.stringify(obj).toLowerCase(), obj])).values()])
         .custom(allowedModels => {
-            // eslint-disable-next-line no-restricted-syntax
             for(const model of allowedModels) {
                 if(!model.modelName || !validModels.includes(model.modelName.toLowerCase())) {
                     throw new Error(`Invalid model: ${model.modelName}`);
@@ -57,7 +69,6 @@ exports.updateRoleValidation = [
                 if(!model.permissions || model.permissions.length === 0) {
                     throw new Error('Any model must has one permission at least');
                 }
-                // eslint-disable-next-line no-restricted-syntax
                 for(const permission of model.permissions) {
                     if(!validPermissions.includes(permission.toLowerCase())) {
                         throw new Error(`Invalid permission: ${permission}`);
@@ -86,9 +97,22 @@ exports.updateRoleValidation = [
         .custom(async (value, {req}) => {
             if(value) {
                 const role = await roleModel.findById(req.params.id);
-                if(role.slug === "client") {
-                    throw new Error("You can not delete client role because all the system depends on this role")
+                if(role.slug === "client" || role.slug === "super-admin") {
+                    throw new Error(`You can not delete ${role.name} role because all the system depends on this role`)
                 }
+            }
+            return true;
+        }),
+		
+	errorExpressValidatorHandler,
+]
+
+exports.deleteRoleValidation = [
+    check("id")
+        .custom(async (value, {req}) => {
+            const role = await roleModel.findById(req.params.id);
+            if(role.slug === "client" || role.slug === "super-admin") {
+                throw new Error(`You can not delete ${role.name} role because all the system depends on this role`)
             }
             return true;
         }),
