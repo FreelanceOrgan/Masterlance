@@ -6,7 +6,6 @@ const dbConnection = require("./Config/database")
 const logger = require("./logger");
 const globalErrorHandler = require("./ErrorHandler/globalErrorHandler")
 const routesMounting = require("./routesMounting");
-const notFoundRoutesHandler = require("./ErrorHandler/notFoundRoutesHandler")
 const APIError = require("./ErrorHandler/APIError");
 
 
