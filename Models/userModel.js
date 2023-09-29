@@ -30,8 +30,8 @@ const userSchema = mongoose.Schema(
             type: String,
             trim: true,
             required: [true, 'Fullname is required'],
-            minlength: [3, 'Too short firstname, must be 3 characters at least'],
-            maxlength: [32, 'Too long firstname, must be 32 characters at most'],
+            minlength: [3, 'Too short Fullname, must be 3 characters at least'],
+            maxlength: [32, 'Too long Fullname, must be 32 characters at most'],
         },
         email: {
             type: String,
@@ -56,10 +56,9 @@ const userSchema = mongoose.Schema(
             trim: true,
             required: [true, 'WhatsApp number is required']
         },
-        registerFriendCode: {
+        referralCode: {
             type: String,
-            required: [true, 'Register Friend Code number is required'],
-            maxlength: 4
+            maxlength: 4,
         },
         timeZone: {
             type: String,
@@ -69,6 +68,10 @@ const userSchema = mongoose.Schema(
         profileImage: {
             type: String,
             default: "https://cdn-icons-png.flaticon.com/512/236/236831.png"
+        },
+        points: {
+            type: Number,
+            default: 0
         },
         role: {
             type: Number,
@@ -101,7 +104,7 @@ const userSchema = mongoose.Schema(
 
 userSchema.plugin(AutoIncrement.plugin, {model: 'users', startAt: 1});
 
-userSchema.pre('save', function(next) {
+userSchema.pre('save', async function(next) {
     if(this.password) {
         this.password = bcrypt.hashSync(this.password, salt);
     }
