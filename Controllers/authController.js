@@ -5,7 +5,50 @@ const APIError = require("../ErrorHandler/APIError");
 const responseFormatter = require("../ResponseFormatter/responseFormatter");
 const userModel = require("../Models/userModel");
 const {addDocument} = require("./Base/baseController");
-const {sendEmail} = require("../Services/sendEmailService")
+const {sendEmail} = require("../Services/sendEmailService");
+
+// @desc    Generate random Referral Code 
+// @route   No
+// @access  No
+const generateReferralCode = () => {
+    const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let code = '';
+    for (let i = 0; i < 4; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+        code += characters[randomIndex];
+    }
+    return code;
+}
+
+// @desc    Create referral code for each client user only will be added to Database
+// @route   No
+// @access  No
+exports.createReferralCode = async (request, response, next) => {
+    let isReferralCodeCreated = false;
+    do {
+        const referralCode = generateReferralCode()
+        const isExist = await userModel.findOne({referralCode});
+        if(!isExist) {
+            request.body.referralCode = referralCode;
+            isReferralCodeCreated = true;
+        }
+    }while(!isReferralCodeCreated);
+    next();
+}
+
+// @desc    increase the points of friend when use his referral code during registration
+// @route   No
+// @access  No
+exports.increaseRegisterFriendPoints = async (request, response, next) => {
+    if(request.body.registerFriendCode) {
+        const friend = await userModel.findOne({referralCode: request.body.registerFriendCode}, {points: 1});
+        if(friend) {
+            friend.points += 1;
+            friend.save();
+        }
+    }
+    next();
+}
 
 // @desc    Signup
 // @route   POST /auth/signup
