@@ -1,12 +1,13 @@
+const authRoute = require("./Routes/authRoute");
 const roleRoute = require("./Routes/roleRoute");
 const userRoute = require("./Routes/userRoute");
-const authRoute = require("./Routes/authRoute");
-
+const transactionRoute = require("./Routes/transactionRoute");
 
 const mountRoutes = (app, apiVersion) => {
     app.use(`${apiVersion}/auth`, authRoute);
-    app.use(`${apiVersion}/user`, userRoute);
-    app.use(`${apiVersion}/role`, roleRoute);
+    app.use(`${apiVersion}/roles`, roleRoute);
+    app.use(`${apiVersion}/users`, userRoute);
+    app.use(`${apiVersion}/transactions`, transactionRoute);
 }
 
 module.exports = mountRoutes;
