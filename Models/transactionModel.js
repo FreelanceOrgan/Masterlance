@@ -28,6 +28,10 @@ const transactionSchema = mongoose.Schema(
             type: Boolean,
             default: false
         },
+        isTransferred: {
+            type: Boolean,
+            default: false
+        },
         available: {
             type: Boolean,
             default: true
@@ -44,11 +48,12 @@ const transactionSchema = mongoose.Schema(
 
 transactionSchema.plugin(AutoIncrement.plugin, {model: 'transactions', startAt: 1});
 
-transactionSchema.pre(/^find/, (next) => {
+transactionSchema.pre(/^find/, function (next) {
     this.populate({
         path: 'user',
         select: 'fullName email mobilePhone whatsAPP'
     })
+    next();
 })
 
 const transactionModel = mongoose.model("transactions", transactionSchema);

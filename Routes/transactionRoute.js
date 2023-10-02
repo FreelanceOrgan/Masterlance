@@ -5,12 +5,12 @@ const {authentication, authorization, allowClientRoleOnly} = require("../Service
 const {addLoginUserIdToRequestBody} = require("../Shared/addToRequest");
 const {idValidation} = require("../Middlewares/idValidation")
 const {addTransactionValidation, updateTransactionValidation} = require("../Middlewares/transactionValidation")
-const {getAllTransactions, getTransactionById, removeIsConfirmedIfItSend, addTransaction, updateTransaction, deleteTransaction} = require("../Controllers/transactionController");
+const {getAllTransactions, getTransactionById, addTransaction, updateTransaction, deleteTransaction} = require("../Controllers/transactionController");
 
 router.route("/")
     .all(authentication, authorization("transactions"))
     .get(getAllTransactions)
-    .post(allowClientRoleOnly, addLoginUserIdToRequestBody, addTransactionValidation, removeIsConfirmedIfItSend, addTransaction)
+    .post(allowClientRoleOnly, addLoginUserIdToRequestBody, addTransactionValidation, addTransaction)
 
 router.route("/:id")
     .all(authentication, authorization("transactions"), idValidation)

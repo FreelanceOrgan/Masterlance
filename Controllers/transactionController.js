@@ -1,5 +1,8 @@
+const asyncHandler = require('express-async-handler');
 const transactionModel = require("../Models/transactionModel")
-const {getAllDocuments, getDocumentById, addDocument, updateDocument, softDeleteDocument} = require("./Base/baseController");
+const {createTransactionSession, deleteInConfirmedTransactions} = require("../Services/transactionService");
+const {getAllDocuments, getDocumentById, updateDocument, softDeleteDocument} = require("./Base/baseController");
+const responseFormatter = require('../ResponseFormatter/responseFormatter');
 
 // @desc    Get All Transactions
 // @route   GET /transaction
@@ -12,25 +15,26 @@ exports.getAllTransactions = getAllDocuments(transactionModel, 'Transactions', .
 // @access  Private
 exports.getTransactionById = getDocumentById(transactionModel, 'Transaction');
 
-// @desc    Remove isConfirmed property from the body of the request during add new transaction
-// @route   No
-// @access  No
-exports.removeIsConfirmedIfItSend = (request, response, next) =>{
-    if(request.body.isConfirmed) {
-        delete request.body.isConfirmed;
-    }
-    next();
-}
-
 // @desc    Create transaction
 // @route   POST /transaction
 // @access  Private
-exports.addTransaction = addDocument(transactionModel, 'Transaction');
+exports.addTransaction = asyncHandler(async (request, response, next) => {
+    if(request.body.isConfirmed) {
+        delete request.body.isConfirmed;
+    }
+    if(request.body.isTransferred) {
+        delete request.body.isTransferred;
+    }
+    const createdTransaction = await transactionModel.create(request.body);
+    const createdSession = await createTransactionSession(request.body.amount);
+    deleteInConfirmedTransactions(createdTransaction._id);
+    response.status(201).json(responseFormatter(true, `Paypal payment session is created successfully`, [createdSession]));
+});
 
 // @desc    Update transaction
 // @route   PATCH /transaction/:id
 // @access  Private
-const fieldsThatAllowToUpdate = ['amount', 'paymentMethod', 'paymentMethodRequirements'];
+const fieldsThatAllowToUpdate = ['paymentMethod', 'paymentMethodRequirements'];
 exports.updateTransaction = updateDocument(transactionModel, 'Transaction', ...fieldsThatAllowToUpdate);
 
 // @desc    Delete transaction
