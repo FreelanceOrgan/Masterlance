@@ -26,7 +26,7 @@ exports.addTransaction = asyncHandler(async (request, response, next) => {
         delete request.body.isTransferred;
     }
     const createdTransaction = await transactionModel.create(request.body);
-    const createdSession = await createTransactionSession(request.body.amount);
+    const createdSession = await createTransactionSession(createdTransaction._id, request.body.amount);
     deleteInConfirmedTransactions(createdTransaction._id);
     response.status(201).json(responseFormatter(true, `Paypal payment session is created successfully`, [createdSession]));
 });
