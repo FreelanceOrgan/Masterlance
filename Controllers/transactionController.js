@@ -15,7 +15,7 @@ exports.allowIsConfirmedTransactionsOnly = (request, response, next) => {
 // @desc    Get All Transactions
 // @route   GET /transaction
 // @access  Private
-const searchFields = ['userId', 'amount', 'paymentMethod'];
+const searchFields = ['user', 'amount', 'paymentMethod', 'isTransferred'];
 exports.getAllTransactions = getAllDocuments(transactionModel, 'Transactions', ...searchFields);
 
 // @desc    Get transaction by ID
