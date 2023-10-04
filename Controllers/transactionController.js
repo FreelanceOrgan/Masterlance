@@ -4,6 +4,14 @@ const {createTransactionSession, deleteInConfirmedTransactions} = require("../Se
 const {getAllDocuments, getDocumentById, updateDocument, softDeleteDocument} = require("./Base/baseController");
 const responseFormatter = require('../ResponseFormatter/responseFormatter');
 
+// @desc    Allow to show Confirmed Transactions Only
+// @route   No
+// @access  No
+exports.allowIsConfirmedTransactionsOnly = (request, response, next) => {
+    request.query.isConfirmed = true;
+    next();
+}
+
 // @desc    Get All Transactions
 // @route   GET /transaction
 // @access  Private
