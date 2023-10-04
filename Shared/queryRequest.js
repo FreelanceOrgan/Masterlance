@@ -12,7 +12,6 @@ const filter = (request, ...searchFields) => {
 	//Filter by regex matching
 	if(request.query.search) {
 		filteredFields.$or = [];
-		// eslint-disable-next-line no-restricted-syntax
 		for(const field of searchFields) {
 			filteredFields.$or.push({[field]: {$regex: request.query.search, $options: 'i'}});
 		}

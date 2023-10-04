@@ -1,12 +1,15 @@
+const authRoute = require("./Routes/authRoute");
 const roleRoute = require("./Routes/roleRoute");
 const userRoute = require("./Routes/userRoute");
-const authRoute = require("./Routes/authRoute");
-
+const transactionRoute = require("./Routes/transactionRoute");
+const webhookRoute = require("./Routes/webhookRoute");
 
 const mountRoutes = (app, apiVersion) => {
     app.use(`${apiVersion}/auth`, authRoute);
-    app.use(`${apiVersion}/user`, userRoute);
-    app.use(`${apiVersion}/role`, roleRoute);
+    app.use(`${apiVersion}/roles`, roleRoute);
+    app.use(`${apiVersion}/users`, userRoute);
+    app.use(`${apiVersion}/transactions`, transactionRoute);
+    app.use(`${apiVersion}/webhooks`, webhookRoute);
 }
 
 module.exports = mountRoutes;

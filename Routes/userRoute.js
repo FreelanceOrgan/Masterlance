@@ -7,7 +7,6 @@ const {addUserValidation, updateUserValidation, changeEmailValidation, changePas
 const {uploadImageList, toFirebase} = require("../uploadFiles/uploadImage");
 const {authentication, authorization, preventClientRole, checkParamIdEqualTokenId} = require("../Services/authService");
 
-
 const uploadFiles = [{name: "profileImage", maxCount: 1}];
 
 router.route("/")

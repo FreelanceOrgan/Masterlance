@@ -1,4 +1,4 @@
-const {check} = require("express-validator");
+const {body} = require("express-validator");
 const slugify = require("slugify")
 const errorExpressValidatorHandler = require("../ErrorHandler/errorExpressValidatorHandler");
 const roleModel = require("../Models/roleModel");
@@ -7,7 +7,7 @@ const validModels = [ 'roles', 'users'];
 const validPermissions = ['get', 'post', 'patch', 'put', 'delete'];
 
 exports.addRoleValidation = [
-	check("name")
+	body("name")
 		.notEmpty().withMessage("Role name is required")
 		.isString().withMessage("Role Name must be string")
 		.isLength({min: 3}).withMessage("Too short role name, 3 characters at least")
@@ -20,7 +20,7 @@ exports.addRoleValidation = [
             return true
         }),
 
-    check("allowedModels")
+    body("allowedModels")
         .isArray({min: 1}).withMessage("Any role must have one controlled model at least")
         .customSanitizer((allowedModels) => [...new Map(allowedModels.map(obj => [JSON.stringify(obj).toLowerCase(), obj])).values()])
         .custom(allowedModels => {
@@ -44,7 +44,7 @@ exports.addRoleValidation = [
 ]
 
 exports.updateRoleValidation = [
-	check("name")
+	body("name")
 		.optional()
 		.isString().withMessage("Role name must be string")
 		.isLength({min: 3}).withMessage("Too short role name, 3 characters at least")
@@ -57,7 +57,7 @@ exports.updateRoleValidation = [
             return true
         }),
 
-    check("allowedModels")
+    body("allowedModels")
         .optional()
         .isArray({min: 1}).withMessage("Any role must have one controlled model at least")
         .customSanitizer((allowedModels) => [...new Map(allowedModels.map(obj => [JSON.stringify(obj).toLowerCase(), obj])).values()])
@@ -78,7 +78,7 @@ exports.updateRoleValidation = [
             return true
         }),
 
-    check("available")
+    body("available")
         .optional()
         .isBoolean().withMessage("Available must be boolean")
         .custom(async (value, {req}) => {
@@ -91,7 +91,7 @@ exports.updateRoleValidation = [
             return true;
         }),
     
-    check("deleted")
+    body("deleted")
         .optional()
         .isBoolean().withMessage("Deleted must be boolean")
         .custom(async (value, {req}) => {
@@ -108,7 +108,7 @@ exports.updateRoleValidation = [
 ]
 
 exports.deleteRoleValidation = [
-    check("id")
+    body("id")
         .custom(async (value, {req}) => {
             const role = await roleModel.findById(req.params.id);
             if(role.slug === "client" || role.slug === "super-admin") {
