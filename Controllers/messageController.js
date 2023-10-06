@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler")
 const messageModel = require("../Models/messageModel");
-const {getAllDocuments, getDocumentById, addDocument, softDeleteDocument} = require("./Base/baseController");
+const {getAllDocuments, getDocumentById, addDocument, hardDeleteDocument} = require("./Base/baseController");
 const {sendEmail} = require("../Services/sendEmailService");
 const APIError = require("../ErrorHandler/APIError");
 const responseFormatter = require("../ResponseFormatter/responseFormatter");
@@ -39,4 +39,4 @@ exports.replyOnMessage = asyncHandler(async (request, response, next) => {
 // @desc    Delete message
 // @route   DELETE /message/:id
 // @access  Private
-exports.deleteMessage = softDeleteDocument(messageModel, 'Message');
+exports.deleteMessage = hardDeleteDocument(messageModel, 'Message');
