@@ -18,4 +18,11 @@ const addLoginUserIdToRequestBody = (request, response, next) => {
     next();
 }
 
-module.exports = {addParentIdFromParamToRequestQuery, addParentIdFromParamToRequestBody, addLoginUserIdToRequestBody}
+const addLoginUserIdToRequestQuery = (queryField) => (request, response, next) => {
+    if(request.user.role.name === 'Client') {
+        request.query[queryField] = request.user.id;
+    }
+    next();
+}
+
+module.exports = {addParentIdFromParamToRequestQuery, addParentIdFromParamToRequestBody, addLoginUserIdToRequestBody, addLoginUserIdToRequestQuery}

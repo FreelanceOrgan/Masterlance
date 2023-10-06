@@ -16,12 +16,12 @@ exports.getAllMessages = getAllDocuments(messageModel, 'Messages', ...searchFiel
 // @access  Private
 exports.getMessageById = getDocumentById(messageModel, 'Message');
 
-// @desc    Create message
+// @desc    Send message
 // @route   POST /message
 // @access  Private
 exports.sendMessage = addDocument(messageModel, 'Message');
 
-// @desc    Update message
+// @desc    Reply on message
 // @route   PATCH /message/:id
 // @access  Private
 exports.replyOnMessage = asyncHandler(async (request, response, next) => {
