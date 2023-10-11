@@ -67,7 +67,6 @@ const userSchema = mongoose.Schema(
         },
         profileImage: {
             type: String,
-            default: "https://cdn-icons-png.flaticon.com/512/236/236831.png"
         },
         points: {
             type: Number,

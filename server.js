@@ -8,7 +8,6 @@ const globalErrorHandler = require("./ErrorHandler/globalErrorHandler")
 const routesMounting = require("./routesMounting");
 const APIError = require("./ErrorHandler/APIError");
 
-
 //For deploy on render 
 if (!String.prototype.replaceAll) {
     String.prototype.replaceAll = function (search, replacement) {
