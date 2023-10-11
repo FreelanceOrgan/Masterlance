@@ -4,6 +4,7 @@ const responseFormatter = require("../ResponseFormatter/responseFormatter");
 const APIError = require("../ErrorHandler/APIError");
 const userModel = require("../Models/userModel");
 const {getAllDocuments, getDocumentById, addDocument, updateDocument, softDeleteDocument} = require("./Base/baseController");
+const {deleteImage} = require("../fileHandler/deleteImage");
 
 // @desc    Get All users
 // @route   GET /user
@@ -26,6 +27,23 @@ exports.addUser = addDocument(userModel, 'User');
 // @access  Private
 const fieldsThatAllowToUpdate = ["fullName", "mobilePhone", "whatsAPP", "timeZone", "profileImage", "available"];
 exports.updateUser = updateDocument(userModel, 'User', ...fieldsThatAllowToUpdate);
+
+// @desc    Delete previous User image
+// @route   PATCH /user/:id
+// @access  Private
+exports.removePreviousUserProfileImage = asyncHandler(async (request, response, next) => {
+    if(Object.keys(request.files).length > 0) {
+        const user = await userModel.findById(request.params.id, {profileImage: 1});
+        if(user && user.profileImage) {
+            try {
+                await deleteImage(user.profileImage);
+            }catch(error) {
+                throw new Error(error.message);
+            }
+        }
+    }
+    next();
+})
 
 // @desc    Update User
 // @route   PATCH /user/:id/role

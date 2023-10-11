@@ -1,10 +1,10 @@
 const express = require("express");
 
 const router = express.Router();
-const {getAllUsers, getUserById, addUser, updateUser, updateUserRole, blockUser, changeEmail, changePassword, deleteUser} = require("../Controllers/userController");
+const {getAllUsers, getUserById, addUser, updateUser, removePreviousUserProfileImage, updateUserRole, blockUser, changeEmail, changePassword, deleteUser} = require("../Controllers/userController");
 const {idValidation} = require("../Middlewares/idValidation")
 const {addUserValidation, updateUserValidation, changeEmailValidation, changePasswordValidation} = require("../Middlewares/userValidation")
-const {uploadImageList, toFirebase} = require("../uploadFiles/uploadImage");
+const {uploadImageList, toFirebase} = require("../fileHandler/uploadImage");
 const {authentication, authorization, preventClientRole, checkParamIdEqualTokenId} = require("../Services/authService");
 
 const uploadFiles = [{name: "profileImage", maxCount: 1}];
@@ -17,7 +17,7 @@ router.route("/")
 router.route("/:id")
     .all(authentication, authorization("users"), idValidation, checkParamIdEqualTokenId("id"))
     .get(getUserById)
-    .patch(/*uploadImageList(uploadFiles), toFirebase(uploadFiles, "user", "users"),*/ updateUserValidation, updateUser)
+    .patch(uploadImageList(uploadFiles), removePreviousUserProfileImage, toFirebase(uploadFiles, "user", "users"), updateUserValidation, updateUser)
     .delete(preventClientRole, deleteUser)
 
 router.route("/:id/changeemail")

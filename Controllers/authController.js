@@ -1,4 +1,6 @@
 const asyncHandler = require("express-async-handler");
+const { OAuth2Client } = require('google-auth-library');
+const {google} = require('googleapis');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const APIError = require("../ErrorHandler/APIError");
@@ -6,6 +8,14 @@ const responseFormatter = require("../ResponseFormatter/responseFormatter");
 const userModel = require("../Models/userModel");
 const {addDocument} = require("./Base/baseController");
 const {sendEmail} = require("../Services/sendEmailService");
+
+// const client = new OAuth2Client(process.env.clientId);
+
+const oauth2Client = new google.auth.OAuth2(
+    process.env.clientId,
+    process.env.clientSecret,
+    "https://localhost:8000"
+);
 
 // @desc    Generate random Referral Code 
 // @route   No
@@ -18,7 +28,7 @@ const generateReferralCode = () => {
         code += characters[randomIndex];
     }
     return code;
-}
+};
 
 // @desc    Create referral code for each client user only will be added to Database
 // @route   No
@@ -34,7 +44,7 @@ exports.createReferralCode = async (request, response, next) => {
         }
     }while(!isReferralCodeCreated);
     next();
-}
+};
 
 // @desc    increase the points of friend when use his referral code during registration
 // @route   No
@@ -48,7 +58,7 @@ exports.increaseRegisterFriendPoints = async (request, response, next) => {
         }
     }
     next();
-}
+};
 
 // @desc    Signup
 // @route   POST /auth/signup
@@ -87,7 +97,7 @@ exports.login = asyncHandler(async (request, response, next) => {
         return;
     }
     next(new APIError('Your email or password may be incorrect', 403));
-})
+});
 
 // @desc    Forget Password
 // @route   POST /api/v1/auth/forgetpassword
@@ -122,7 +132,7 @@ exports.forgetPassword = asyncHandler(async (request, response, next) => {
         }
     }
     response.status(200).json(responseFormatter(true, 'If your email is found, you will receive a reset code to reset your password'));
-})
+});
 
 // @desc    Verify Reset Password Code
 // @route   POST /api/v1/auth/verifyresetpasswordcode
@@ -144,7 +154,7 @@ exports.verifyResetPasswordCode = asyncHandler(async (request, response, next) =
         }
         throw new APIError("Invalid code, try to ask another code", 400);
     }
-})
+});
 
 // @desc    Verify Reset Password
 // @route   POST /api/v1/auth/resetpassword
@@ -168,4 +178,37 @@ exports.resetPassword = asyncHandler(async (request, response, next) => {
         }
         throw new APIError("This code expired, try to ask another code", 400);
     }
-})
+});
+
+// async function verifyGoogleToken(token) {
+//     try {
+//         const ticket = await client.verifyIdToken({
+//             idToken: token,
+//             audience: 'process.env.clientId',
+//         });
+//         const payload = ticket.getPayload();
+//         // You can access user information in the 'payload' object.
+//         return payload;
+//     } catch (error) {
+//         throw new Error('Google token verification failed');
+//     }
+// }
+
+// @desc    Signup with google
+// @route   POST /api/v1/auth/signup/google
+// @access  Public
+exports.googleSignup = asyncHandler(async (request, response, next) => {
+    const scopes = [
+        'https://www.googleapis.com/auth/drive.metadata.readonly'
+    ];
+
+    const authorizationUrl = oauth2Client.generateAuthUrl({
+        // 'online' (default) or 'offline' (gets refresh_token)
+        access_type: 'offline',
+        /** Pass in the scopes array defined above.
+          * Alternatively, if only one scope is needed, you can pass a scope URL as a string */
+        scope: scopes,
+        // Enable incremental authorization. Recommended as a best practice.
+        include_granted_scopes: true
+    });
+});
