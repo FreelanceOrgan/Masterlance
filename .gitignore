@@ -1,6 +1,8 @@
 access.log
 config.env
+configProduction.env
 notes.txt
 .eslintrc.json
 uploads/
 node_modules/
+notes.txt
