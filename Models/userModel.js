@@ -44,7 +44,6 @@ const userSchema = mongoose.Schema(
         password: {
             type: String,
             trim: true,
-            required: [true, 'Password is required']    
         },
         mobilePhone: {
             type: String,
@@ -63,7 +62,6 @@ const userSchema = mongoose.Schema(
         timeZone: {
             type: String,
             // required: [true, 'Timezone is required'],
-            // match: /^/
         },
         profileImage: {
             type: String,
@@ -71,6 +69,12 @@ const userSchema = mongoose.Schema(
         points: {
             type: Number,
             default: 0
+        },
+        provider: {
+            type: String,
+        },
+        refreshToken: {
+            type: String,
         },
         role: {
             type: Number,

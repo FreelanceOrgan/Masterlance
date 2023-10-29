@@ -25,7 +25,9 @@ dbConnection().then(() => {
     })
 })
 
-app.use(cors())
+app.use(cors({
+    origin: "*",
+}))
 app.options('*', cors());
 app.use(compression());
 app.use(express.json());
