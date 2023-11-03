@@ -11,13 +11,13 @@ router.route("/signup")
 router.route("/login")
     .post(loginValidation, login)
 
-router.route("/forgetpassword")
+router.route("/password/forget")
     .post(forgetPasswordValidation, forgetPassword)
 
-router.route("/verifyresetpasswordcode")
+router.route("/password/verify")
     .post(verifyResetPasswordCodeValidation, verifyResetPasswordCode)
 
-router.route("/resetpassword")
+router.route("/password/reset")
     .post(resetPasswordValidation, resetPassword)
 
 module.exports = router;

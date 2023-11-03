@@ -1,4 +1,4 @@
-const {body} = require("express-validator");
+const {body, check} = require("express-validator");
 const slugify = require("slugify")
 const errorExpressValidatorHandler = require("../ErrorHandler/errorExpressValidatorHandler");
 const roleModel = require("../Models/roleModel");
@@ -108,7 +108,7 @@ exports.updateRoleValidation = [
 ]
 
 exports.deleteRoleValidation = [
-    body("id")
+    check("id")
         .custom(async (value, {req}) => {
             const role = await roleModel.findById(req.params.id);
             if(role.slug === "client" || role.slug === "super-admin") {
