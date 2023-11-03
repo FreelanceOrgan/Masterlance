@@ -1,5 +1,5 @@
 const express = require("express");
-const {getUserInfoFromGoogle, getUserInfoFromFacebook, getUserInfoFromLinkedIn} = require("../Services/SSOService");
+const {getUserInfoFromGoogle, getUserInfoFromFacebook, getUserInfoFromLinkedIn} = require("../Controllers/SSOController");
 const {signup, increaseRegisterFriendPoints, createReferralCode, login} = require("../Controllers/authController");
 const {addClientRole} = require("../Shared/addClientRole");
 const {signupValidation, loginValidation} = require("../Middlewares/authValidation");

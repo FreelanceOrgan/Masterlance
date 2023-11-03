@@ -20,10 +20,10 @@ router.route("/:id")
     .patch(uploadImageList(uploadFiles), removePreviousUserProfileImage, toFirebase(uploadFiles, "user", "users"), updateUserValidation, updateUser)
     .delete(preventClientRole, deleteUser)
 
-router.route("/:id/changeemail")
+router.route("/:id/update/email")
     .patch(changeEmailValidation, changeEmail);
     
-router.route("/:id/changepassword")
+router.route("/:id/update/password")
     .patch(changePasswordValidation, changePassword);
 
 router.route("/:id/role")

@@ -1,8 +1,8 @@
 const express = require("express");
-const {getLinkedinInfo} = require("../Controllers/platformsController");
+const {getUserInfoFromFreelancer} = require("../Controllers/platformsController");
 const router = express.Router();
 
-router.route('/linkedIn')
-  .post(getLinkedinInfo);
+router.route('/freelancer/userinfo')
+  .post(getUserInfoFromFreelancer);
 
 module.exports = router;

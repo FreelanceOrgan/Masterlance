@@ -64,7 +64,7 @@ exports.signup = addDocument(userModel, 'User');
 // @access  Public
 exports.login = asyncHandler(async (request, response, next) => {        
     const user = await userModel.findOne({email: request.body.email}, {__v: 0, createdAt: 0, updatedAt: 0});
-    if(user && (user.provider === request.body.provider || await bcrypt.compare(request.body.password, user.password))) {
+    if(user && (user.provider === request.body.provider || bcrypt.compareSync(request.body.password, user.password))) {
         if(user.deleted) {
             next(new APIError('Your account is deleted', 403));
             return;
@@ -84,6 +84,7 @@ exports.login = asyncHandler(async (request, response, next) => {
                     _id: user._id,
                     name: `${user.fullName}`,
                     email: user.email,
+                    profileImage: user.profileImage,
                     role: user.role.name
                 }, 
                 token: token,
