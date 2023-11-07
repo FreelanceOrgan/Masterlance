@@ -1,0 +1,67 @@
+name: Deploy Node.js app
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the app
+        run: npm start
+
+      - name: Deploy the app
+        uses: actions/deploy@v3
+        with:
+          env:
+            SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+            DEPLOY_TARGET: ubuntu@192.185.57.60
+            deployment_path: ./
+            Port: 8000
+            NODE_ENV: production
+            baseURL: https://masterlance.onrender.com
+            apiVersion: /api/v1
+
+            DatabaseURL: mongodb+srv://masterlance:masterlance123@cluster0.twlvvc0.mongodb.net/masterlance?retryWrites=true&w=majority
+
+            apiKey: AIzaSyBbeaXTAwE44HAWH-USsCv5WfL2ah_Ksss
+            authDomain: masterlance-4078a.firebaseapp.com
+            projectId: masterlance-4078a
+            storageBucket: masterlance-4078a.appspot.com
+            messagingSenderId: 271467712101
+            appId: 1:271467712101:web:a8d83e2d0e4a9fa536408c
+            measurementId: G-4VCZGNDCT4
+            firebase_type: "service_account"
+
+            salt_round: 10
+
+            Secret_Key: 0aa3c3b3c288bdd39024c298e67f4fmasterlancec2678b804f98b6f702113821ee18c37486hany
+            Expiration_Time: 2d
+
+            host: smtp.gmail.com
+            auth_user: nodej7346@gmail.com
+            auth_pass: hsfmpnrelczgqkld
+
+            PaypalClientId: AVvdMXWE1sw-x_LHetCqDt0vHCyu_aQmpGV0zhNR09gILaasaiy3zdju3t333o0a2432LQKP6y7OdOq9
+            PaypalSecretKey: EEadEdESY8is9XtcnufE1Lf56NIwa7ZIQXorqxDHQqfUtAp6DsNUYAqFJUxwgNWqosuiDmonH2c55YlL
+            PaypalSandboxURL: https://sandbox.paypal.com
+            PaypalBaseURL: https://api-m.sandbox.paypal.com
+            PaypalEmail: sb-uxtza27637840@personal.example.com
+            PaypalPassword: ^}7L5Zm/
+            PaypalWebhookId: 7V301606R1692925W
+
+            Google_Client_Id: 68203111308-02h9073266gi5lt4kfde3lct5l35d7mu.apps.googleusercontent.com
+            Google_Client_Secret: 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
+            Google_Token_URL: https://oauth2.googleapis.com/token
+
+            Linkedin_Client_Id: 772k5r7o14r85f
+            Linkedin_Client_Secret: 3yknyTpU6QGLJpnK
+            Linkedin_Token_Url: https://www.linkedin.com/oauth/v2/accessToken
