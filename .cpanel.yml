@@ -22,7 +22,7 @@ jobs:
         uses: actions/deploy@v3
         with:
           env:
-            SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+            SSH_PRIVATE_KEY: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDT9/cYVkuYWsXgDfcRLburws4KxalLVpg0dlwYsM0BX2/ku5V2tnvSwkjsnGaE83hxONFM24XawNTf4ug1cYNCu7vzivBDdr0TrPTbKuw7e3S6T54rQJAYUq4Gbvg6dvah5xUmxIXcxrWeA65EOnXR1Pkd61UNAbcUUoYCrVSATeUGTb4TFJyKnF7Ro/BH3BjzkKeECXwuCh2Y21Cto9tMrjRnvyPj4DQdHAxoC1UrF8iDlKL6eh+AhWK285/KCgP3XQScRlFsVTJX6uVP/60X+kSgV6hgGO/td2b2nG+aHQexVLAKbpHzjJftFyqIg+Ox1QbgqPc0GEdd8t+ucRjt tarek\tarek@Tarek
             DEPLOY_TARGET: ubuntu@192.185.57.60
             deployment_path: ./
             Port: 8000
