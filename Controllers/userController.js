@@ -56,7 +56,7 @@ exports.updateUserRole = updateDocument(userModel, 'User', "role");
 exports.blockUser = updateDocument(userModel, 'User', "blocked");
 
 // @desc    Change Email
-// @route   PATCH /user/:id/changeemail
+// @route   PATCH /user/:id/update/email
 // @access  Private
 exports.changeEmail = asyncHandler(async (request, response, next) => {
     const user = await userModel.findOne({_id: request.params.id, email: request.body.currentEmail}, {password: 1});
@@ -71,7 +71,7 @@ exports.changeEmail = asyncHandler(async (request, response, next) => {
 })
 
 // @desc    Change Password
-// @route   PATCH /user/:id/changepassword
+// @route   PATCH /user/:id/update/password
 // @access  Private
 exports.changePassword = asyncHandler(async (request, response, next) => {
     const user = await userModel.findOne({_id: request.params.id, email: request.body.email});

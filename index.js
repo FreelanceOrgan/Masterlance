@@ -27,7 +27,7 @@ app.use(compression());
 app.use(express.json());
 app.use(logger());
 
-upsertMainItemsIntoDB();
+// upsertMainItemsIntoDB();
 
 routesMounting(app, process.env.apiVersion);
 
