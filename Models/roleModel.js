@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
 const AutoIncrement = require('../Config/autoIncrementInitialization')
+const {ModelNames, ModelPermissions} = require('../enums/ModelPermissions');
 
 const allowedModelSchema = new mongoose.Schema(
     {
@@ -8,13 +9,14 @@ const allowedModelSchema = new mongoose.Schema(
             type: String,
             required: [true, "Any role must have one controlled model at least"],
             lowercase: true,
-            enum: [ 'roles', 'users']
+            enum: Object.values(ModelNames)
         },
         permissions: [{
             type: String,
             required: [true, "Any model must have one permission at least"],
             lowercase: true,
-            enum: ['get', 'post', 'patch', 'put', 'delete']
+            enum: Object.values(ModelPermissions)
+
         }],
     },
     {
@@ -38,6 +40,10 @@ const roleSchema = mongoose.Schema(
             type: String,
             lowercase: true,        
             unique: [true, 'This role is already found']
+        },
+        description: {
+            type: String,
+            trim: true,
         },
         allowedModels: [allowedModelSchema],
         available: {
