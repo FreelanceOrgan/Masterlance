@@ -27,11 +27,10 @@ exports.getUserData = async (scopeURL, access_token) => {
   const response = await fetch(scopeURL, {
   method: 'GET',  
   headers: { 
-      // Authorization: `Bearer ${access_token}`,
-      'freelancer-oauth-v1': `${access_token}`,
+      Authorization: `Bearer ${access_token}`,
+      // 'freelancer-oauth-v1': `${access_token}`,
     }
   })
-  // console.log(response);
   if(response.status !== 200) {
     throw new APIError(response.statusText, response.status);
   }

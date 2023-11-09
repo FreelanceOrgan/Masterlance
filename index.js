@@ -7,6 +7,7 @@ const logger = require("./logger");
 const globalErrorHandler = require("./ErrorHandler/globalErrorHandler")
 const routesMounting = require("./routesMounting");
 const APIError = require("./ErrorHandler/APIError");
+const {upsertMainItemsIntoDB} = require('./Config/upsertMainItemsIntoDB')
 
 const app = express();
 const port = process.env.Port || 8000;
@@ -24,8 +25,9 @@ app.use(cors({
 app.options('*', cors());
 app.use(compression());
 app.use(express.json());
-
 app.use(logger());
+
+upsertMainItemsIntoDB();
 
 routesMounting(app, process.env.apiVersion);
 

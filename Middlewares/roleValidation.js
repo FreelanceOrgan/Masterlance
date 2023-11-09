@@ -2,9 +2,10 @@ const {body, check} = require("express-validator");
 const slugify = require("slugify")
 const errorExpressValidatorHandler = require("../ErrorHandler/errorExpressValidatorHandler");
 const roleModel = require("../Models/roleModel");
+const {ModelNames, ModelPermissions} = require("../enums/ModelPermissions")
 
-const validModels = [ 'roles', 'users'];
-const validPermissions = ['get', 'post', 'patch', 'put', 'delete'];
+const validModels = Object.values(ModelNames);
+const validPermissions = Object.values(ModelPermissions);
 
 exports.addRoleValidation = [
 	body("name")
