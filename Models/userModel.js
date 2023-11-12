@@ -66,6 +66,9 @@ const userSchema = mongoose.Schema(
         profileImage: {
             type: String,
         },
+        verificationImage: {
+            type: String,
+        },
         points: {
             type: Number,
             default: 0
@@ -86,6 +89,10 @@ const userSchema = mongoose.Schema(
         },
         passwordUpdatedTime: {
             type: Date
+        },
+        isUserVerified: {
+            type: Boolean,
+            default: false
         },
         available: {
             type: Boolean,

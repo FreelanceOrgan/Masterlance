@@ -3,6 +3,7 @@ const ModelNames = {
   Roles: 'roles',
   Transactions: 'transactions',
   Messages: 'messages',
+  Platforms: 'platforms',
 }
 
 const ModelPermissions = {

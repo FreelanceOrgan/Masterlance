@@ -1,6 +1,6 @@
-const updatedFields = function(request, feildsThatAllowToUpdate) {
+const updatedFields = function(request, fieldsThatAllowToUpdate) {
     const targetFields = {};
-    for(const prop of feildsThatAllowToUpdate) {
+    for(const prop of fieldsThatAllowToUpdate) {
         if(request.body[prop] !== undefined) {
             targetFields[prop] = request.body[prop];
         }

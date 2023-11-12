@@ -21,12 +21,6 @@ const filter = (request, ...searchFields) => {
 	delete filteredFields.search;
 
 	//Add a condition to get only available and not deleted documents
-	if(!filteredFields.available) {
-		filteredFields.available = true;
-	}
-	if(!filteredFields.deleted) {
-		filteredFields.deleted = false;
-	}
 
 	return filteredFields;
 }

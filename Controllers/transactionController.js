@@ -27,16 +27,16 @@ exports.getTransactionById = getDocumentById(transactionModel, 'Transaction');
 // @route   POST /transaction
 // @access  Private
 exports.addTransaction = asyncHandler(async (request, response, next) => {
-    if(request.body.isConfirmed) {
-        delete request.body.isConfirmed;
-    }
-    if(request.body.isTransferred) {
-        delete request.body.isTransferred;
-    }
-    const createdTransaction = await transactionModel.create(request.body);
-    const createdSession = await createTransactionSession(createdTransaction._id, request.body.amount);
-    deleteInConfirmedTransactions(createdTransaction._id);
-    response.status(201).json(responseFormatter(true, `Paypal payment session is created successfully`, [createdSession]));
+	if(request.body.isConfirmed) {
+		delete request.body.isConfirmed;
+	}
+	if(request.body.isTransferred) {
+		delete request.body.isTransferred;
+	}
+	const createdTransaction = await transactionModel.create(request.body);
+	const createdSession = await createTransactionSession(createdTransaction._id, request.body.amount);
+	deleteInConfirmedTransactions(createdTransaction._id);
+	response.status(201).json(responseFormatter(true, `Paypal payment session is created successfully`, [createdSession]));
 });
 
 // @desc    Update transaction

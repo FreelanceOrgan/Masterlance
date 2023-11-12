@@ -12,6 +12,10 @@ exports.upsertMainItemsIntoDB = async () => {
       modelName: ModelNames.Transactions,
       permissions: [ModelPermissions.Read, ModelPermissions.Create, ModelPermissions.Update, ModelPermissions.Delete]
     },
+    {
+      modelName: ModelNames.Platforms,
+      permissions: [ModelPermissions.Read, ModelPermissions.Create, ModelPermissions.Update, ModelPermissions.Delete]
+    },
   ];
 
   const allowedModelsForAdmin = [

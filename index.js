@@ -20,15 +20,15 @@ const port = process.env.Port || 8000;
 let server = app.listen();
 
 dbConnection().then(() => {
-    server = app.listen(port, async () => {
-        console.log(`App is running at: http://localhost:${port}/`);
-    })
+	server = app.listen(port, async () => {
+		console.log(`App is running at: http://localhost:${port}/`);
+	})
 })
 
+app.options('*', cors());
 app.use(cors({
     origin: "*",
 }))
-app.options('*', cors());
 app.use(compression());
 app.use(express.json());
 app.use(logger());
@@ -38,15 +38,16 @@ app.use(logger());
 routesMounting(app, process.env.apiVersion);
 
 app.all('*', (request, response, next) => {
-    next(new APIError(`This route is not found: ${request.originalUrl}`, 400))
+	next(new APIError(`This route is not found: ${request.originalUrl}`, 400))
 });
 
 app.use(globalErrorHandler);
 
 process.on("unhandledRejection", (error) => {
-    console.error(`Unhandled Rejection Errors: ${error}`);
-    server.close(() => {
-        console.error(`Shutting down....`);
-        process.exit(1);
-    })
+	console.error(`Unhandled Rejection Errors: ${error}`);
+	server.close(() => {
+		console.error(`Shutting down....`);
+		process.exit(1);
+	})
 })
+
