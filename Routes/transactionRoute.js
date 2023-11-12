@@ -6,14 +6,15 @@ const {addLoginUserIdToRequestBody, addLoginUserIdToRequestQuery} = require("../
 const {idValidation} = require("../Middlewares/idValidation")
 const {addTransactionValidation, updateTransactionValidation} = require("../Middlewares/transactionValidation")
 const {getAllTransactions, allowIsConfirmedTransactionsOnly, getTransactionById, addTransaction, updateTransaction, deleteTransaction} = require("../Controllers/transactionController");
+const {ModelNames} = require('../enums/ModelPermissions');
 
 router.route("/")
-    .all(authentication, authorization("transactions"))
+    .all(authentication, authorization(ModelNames.Transactions))
     .get(allowIsConfirmedTransactionsOnly, addLoginUserIdToRequestQuery("user"), getAllTransactions)
     .post(allowClientRoleOnly, addLoginUserIdToRequestBody, addTransactionValidation, addTransaction)
 
 router.route("/:id")
-    .all(authentication, authorization("transactions"), idValidation)
+    .all(authentication, authorization(ModelNames.Transactions), idValidation)
     .get(getTransactionById)
     .patch(updateTransactionValidation, updateTransaction)
     .delete(deleteTransaction)

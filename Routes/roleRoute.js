@@ -5,14 +5,15 @@ const {getAllRoles, getRoleById, addRole, updateRole, deleteRole} = require("../
 const {idValidation} = require("../Middlewares/idValidation")
 const {addRoleValidation, updateRoleValidation, deleteRoleValidation} = require("../Middlewares/roleValidation")
 const {authentication, authorization} = require("../Services/authService");
+const {ModelNames} = require('../enums/ModelPermissions');
 
 router.route("/")
-    .all(authentication, authorization("roles"))
+    .all(authentication, authorization(ModelNames.Roles))
     .get(getAllRoles)
     .post(addRoleValidation, addRole)
 
 router.route("/:id")
-    .all(authentication, authorization("roles"), idValidation)
+    .all(authentication, authorization(ModelNames.Roles), idValidation)
     .get(getRoleById)
     .patch(updateRoleValidation, updateRole)
     .delete(deleteRoleValidation, deleteRole)

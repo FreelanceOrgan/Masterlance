@@ -25,7 +25,7 @@ exports.addUser = addDocument(userModel, 'User');
 // @desc    Update User
 // @route   PATCH /user/:id
 // @access  Private
-const fieldsThatAllowToUpdate = ["fullName", "mobilePhone", "whatsAPP", "timeZone", "profileImage", "available"];
+const fieldsThatAllowToUpdate = ["fullName", "mobilePhone", "whatsAPP", "timeZone", "profileImage", "verificationImage", "available"];
 exports.updateUser = updateDocument(userModel, 'User', ...fieldsThatAllowToUpdate);
 
 // @desc    Delete previous User image
@@ -49,6 +49,11 @@ exports.removePreviousUserProfileImage = asyncHandler(async (request, response, 
 // @route   PATCH /user/:id/role
 // @access  Private
 exports.updateUserRole = updateDocument(userModel, 'User', "role");
+
+// @desc    Update User
+// @route   PATCH /user/:id/verify
+// @access  Private
+exports.verifyUser = updateDocument(userModel, 'User', "isUserVerified");
 
 // @desc    Block User
 // @route   PATCH /user/:id
