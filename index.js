@@ -9,12 +9,6 @@ const routesMounting = require("./routesMounting");
 const APIError = require("./ErrorHandler/APIError");
 const {upsertMainItemsIntoDB} = require('./Config/upsertMainItemsIntoDB')
 
-if (!String.prototype.replaceAll) {
-    String.prototype.replaceAll = function (search, replacement) {
-        return this.split(search).join(replacement);
-    };
-};
-
 const app = express();
 const port = process.env.Port || 8000;
 let server = app.listen();
