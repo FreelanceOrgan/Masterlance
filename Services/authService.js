@@ -1,13 +1,13 @@
 const asyncHandler = require("express-async-handler");
-require("dotenv").config({path: "config.env"});
-const JWT = require("jsonwebtoken");
 const APIError = require("../ErrorHandler/APIError");
 const userModel = require("../Models/userModel")
+const {ModelNames} = require('../enums/ModelPermissions');
+const {verifyAccessToken} = require('./JWTGenerator');
 
 const authentication = asyncHandler(async (request, response, next) => { 
     if(request.headers.authorization && request.headers.authorization.startsWith("Bearer")) {
         const token = request.headers.authorization.split(" ")[1];
-        const decodedPayload = JWT.verify(token, process.env.Secret_Key);
+        const decodedPayload = verifyAccessToken(token);
         const user = await userModel.findById(decodedPayload.id, {role: 1, passwordUpdatedTime: 1});
         if(user && user.role.name === decodedPayload.role.name) {
             if(user.passwordUpdatedTime) {
@@ -27,7 +27,6 @@ const authentication = asyncHandler(async (request, response, next) => {
 const authorization = (modelName) =>
 asyncHandler(async (request, response, next) => { 
     let permission = request.method.toLowerCase();
-    // eslint-disable-next-line no-restricted-syntax
     for(const allowedModel of request.user.role.allowedModels) {
         if(allowedModel.modelName.toLowerCase() === modelName.toLowerCase() && allowedModel.permissions.includes(permission)) {
             next();
@@ -44,25 +43,25 @@ asyncHandler(async (request, response, next) => {
     throw new APIError(`Not Allowed to ${permission} ${modelName}`, 403);
 });
 
-const preventClientRole = asyncHandler(async (request, response, next) => { 
-    if(request.user.role.name.toLowerCase() === "client") {
+const preventFreelancerRole = asyncHandler(async (request, response, next) => { 
+    if(request.user.role.name.toLowerCase() === "freelancer") {
         throw new APIError('Not allow to access this route', 403);
     }
     next();
 });
 
-const allowClientRoleOnly = asyncHandler(async (request, response, next) => { 
-    if(request.user.role.name.toLowerCase() !== "client") {
-        throw new APIError('The clients only can add new item on this route', 403);
+const allowFreelancerRoleOnly = asyncHandler(async (request, response, next) => { 
+    if(request.user.role.name.toLowerCase() !== "freelancer") {
+        throw new APIError('The Freelancers only can add new item on this route', 403);
     }
     next();
 });
 
 const checkParamIdEqualTokenId = (userId = 'id') => asyncHandler(async (request, response, next) => { 
-    if(request.user.role.name.toLowerCase() === "client" &&+request.params[userId] !== request.user.id) {
+    if(request.user.role.name.toLowerCase() === "freelancer" &&+request.params[userId] !== request.user.id) {
         throw new APIError('Not allow to access this route, the Id in route not match the Id in the token', 403);
     }
     next();
 });
 
-module.exports = {authentication, authorization, preventClientRole, allowClientRoleOnly, checkParamIdEqualTokenId};
+module.exports = {authentication, authorization, preventFreelancerRole, allowFreelancerRoleOnly, checkParamIdEqualTokenId};

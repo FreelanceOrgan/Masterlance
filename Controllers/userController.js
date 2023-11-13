@@ -9,7 +9,7 @@ const {deleteImage} = require("../fileHandler/deleteImage");
 // @desc    Get All users
 // @route   GET /user
 // @access  Public
-const searchFields = ["fullName", "email", "mobilePhone", "whatsAPP", "timeZone", "role"];
+const searchFields = ["firstName", "lastName", "email", "mobilePhone", "whatsAPP", "role"];
 exports.getAllUsers = getAllDocuments(userModel, 'Users', ...searchFields);
 
 // @desc    Get User by ID
@@ -25,24 +25,24 @@ exports.addUser = addDocument(userModel, 'User');
 // @desc    Update User
 // @route   PATCH /user/:id
 // @access  Private
-const fieldsThatAllowToUpdate = ["fullName", "mobilePhone", "whatsAPP", "timeZone", "profileImage", "verificationImage", "available"];
+const fieldsThatAllowToUpdate = ["firstName", "lastName", "mobilePhone", "whatsAPP", "profileImage", "available"];
 exports.updateUser = updateDocument(userModel, 'User', ...fieldsThatAllowToUpdate);
 
 // @desc    Delete previous User image
 // @route   PATCH /user/:id
 // @access  Private
 exports.removePreviousUserProfileImage = asyncHandler(async (request, response, next) => {
-    if(Object.keys(request.files).length > 0) {
-        const user = await userModel.findById(request.params.id, {profileImage: 1});
-        if(user && user.profileImage) {
-            try {
-                await deleteImage(user.profileImage);
-            }catch(error) {
-                throw new Error(error.message);
-            }
-        }
-    }
-    next();
+	if(Object.keys(request.files).length > 0) {
+		const user = await userModel.findById(request.params.id, {profileImage: 1});
+		if(user && user.profileImage) {
+			try {
+				await deleteImage(user.profileImage);
+			}catch(error) {
+				throw new Error(error.message);
+			}
+		}
+	}
+	next();
 })
 
 // @desc    Update User
@@ -50,10 +50,37 @@ exports.removePreviousUserProfileImage = asyncHandler(async (request, response, 
 // @access  Private
 exports.updateUserRole = updateDocument(userModel, 'User', "role");
 
-// @desc    Update User
-// @route   PATCH /user/:id/verify
+// @desc    Allow user to upload verification image
+// @route   PATCH /user/:id/verify/image
 // @access  Private
-exports.verifyUser = updateDocument(userModel, 'User', "isUserVerified");
+exports.upsertVerificationImage = asyncHandler(async (request, response, next) => {
+	const {id} = request.params;
+	const user = await userModel.findById(id);
+	if(!user) {
+		throw new APIError('This user does not exist', 400);
+	}
+	user.freelancer.verificationImage = request.body.verificationImage;
+	await user.save();
+	response.status(200).json(responseFormatter(true, 'Your verification image has been uploaded successfully', [{
+		verificationImage: user.freelancer.verificationImage
+	}]))
+})
+
+// @desc    Update User verification status
+// @route   PATCH /user/:id/verify/status
+// @access  Private
+exports.upsertVerificationStatus = asyncHandler(async (request, response, next) => {
+	const {id} = request.params;
+	const user = await userModel.findById(id);
+	if(!user) {
+		throw new APIError('This user does not exist', 400);
+	}
+	user.freelancer.isUserVerified = request.body.isUserVerified;
+	await user.save();
+	response.status(200).json(responseFormatter(true, 'User verification status has been updated successfully', [{
+		isUserVerified: user.freelancer.isUserVerified
+	}]))
+})
 
 // @desc    Block User
 // @route   PATCH /user/:id

@@ -3,7 +3,7 @@ const roleModel = require("../Models/roleModel");
 const {ModelNames, ModelPermissions} = require('../enums/ModelPermissions');
 
 exports.upsertMainItemsIntoDB = async () => {
-  const allowedModelsForClient = [
+  const allowedModelsForFreelancer = [
     {
       modelName: ModelNames.Users,
       permissions: [ModelPermissions.Read, ModelPermissions.Create, ModelPermissions.Update, ModelPermissions.Delete]
@@ -19,7 +19,7 @@ exports.upsertMainItemsIntoDB = async () => {
   ];
 
   const allowedModelsForAdmin = [
-    ...allowedModelsForClient,
+    ...allowedModelsForFreelancer,
     {
       modelName: ModelNames.Roles,
       permissions: [ModelPermissions.Read, ModelPermissions.Create, ModelPermissions.Update, ModelPermissions.Delete]
@@ -30,7 +30,7 @@ exports.upsertMainItemsIntoDB = async () => {
     },
   ];
 
-  const isRolesExist = await roleModel.find({ slug: { $in: ['super-admin', 'client'] } });
+  const isRolesExist = await roleModel.find({ slug: { $in: ['super-admin', 'freelancer'] } });
 
   if(isRolesExist.length > 0) {
     isRolesExist.forEach((role) => {
@@ -39,8 +39,8 @@ exports.upsertMainItemsIntoDB = async () => {
         role.save();
       }
 
-      if(role.slug === 'client') {
-        role.allowedModels = allowedModelsForClient;
+      if(role.slug === 'freelancer') {
+        role.allowedModels = allowedModelsForFreelancer;
         role.save();
       }
     }); 
@@ -54,14 +54,15 @@ exports.upsertMainItemsIntoDB = async () => {
         allowedModels: allowedModelsForAdmin
       }),
       roleModel.create({
-        name: "Client",
-        slug: "client",
-        allowedModels: allowedModelsForClient
+        name: "freelancer",
+        slug: "freelancer",
+        allowedModels: allowedModelsForFreelancer
       })
     ]);
   
     await userModel.create({
-      fullName: process.env.fullName,
+      firstName: process.env.firstName,
+      lastName: process.env.lastName,
       email: process.env.email,
       password: process.env.password,
       mobilePhone: process.env.mobilePhone,

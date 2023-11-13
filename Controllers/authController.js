@@ -1,11 +1,10 @@
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const APIError = require("../ErrorHandler/APIError");
-const responseFormatter = require("../ResponseFormatter/responseFormatter");
 const userModel = require("../Models/userModel");
-const {addDocument} = require("./Base/baseController");
+const {generateAccessToken, generateRefreshToken, decode, isTokenExpired, verifyRefreshToken} = require("../Services/JWTGenerator");
 const {sendEmail} = require("../Services/sendEmailService");
+const responseFormatter = require("../ResponseFormatter/responseFormatter");
+const APIError = require("../ErrorHandler/APIError");
 
 // @desc    Generate random Referral Code 
 // @route   No
@@ -27,7 +26,7 @@ exports.createReferralCode = async (request, response, next) => {
 	let isReferralCodeCreated = false;
 	do {
 		const referralCode = generateReferralCode()
-		const isExist = await userModel.findOne({referralCode});
+		const isExist = await userModel.findOne({"freelancer.referralCode": referralCode});
 		if(!isExist) {
 			request.body.referralCode = referralCode;
 			isReferralCodeCreated = true;
@@ -41,9 +40,9 @@ exports.createReferralCode = async (request, response, next) => {
 // @access  No
 exports.increaseRegisterFriendPoints = async (request, response, next) => {
 	if(request.body.registerFriendCode) {
-		const friend = await userModel.findOne({referralCode: request.body.registerFriendCode}, {points: 1});
+		const friend = await userModel.findOne({"freelancer.referralCode": request.body.registerFriendCode}, {freelancer: 1});
 		if(friend) {
-			friend.points += 1;
+			friend.freelancer.points += 1;
 			friend.save();
 		}
 	}
@@ -53,7 +52,42 @@ exports.increaseRegisterFriendPoints = async (request, response, next) => {
 // @desc    Signup
 // @route   POST /auth/signup
 // @access  Public
-exports.signup = addDocument(userModel, 'User');
+exports.signup = asyncHandler(async (request, response, next) => {
+	const {firstName, lastName, email, password, mobilePhone, whatsAPP, timeZone, profileImage, referralCode, role} = request.body;
+	const user = await userModel.create({
+		firstName,
+		lastName,
+		email,
+		password,
+		mobilePhone,
+		whatsAPP,
+		profileImage,
+		freelancer: {
+			timeZone,
+			referralCode
+		},
+		role,
+		refreshToken: generateRefreshToken({firstName, lastName, email, profileImage})
+	});
+	response.status(201).json(responseFormatter(true, 'Signup successful', [{
+		user: {
+			_id: user._id,
+			firstName,
+			lastName,
+			email,
+			mobilePhone,
+			whatsAPP,
+			profileImage,
+			freelancer: {
+				timeZone,
+				referralCode,
+				points: user.freelancer.points
+			}
+		},
+		token: generateAccessToken(user),
+		refreshToken: user.refreshToken
+	}]))
+})
 
 // @desc    Login
 // @route   POST /auth/login
@@ -73,17 +107,17 @@ exports.login = asyncHandler(async (request, response, next) => {
 			user.available = true;
 			await user.save();
 		}
-		const token = jwt.sign({id: user._id, role: user.role}, process.env.Secret_Key, {expiresIn: process.env.Expiration_Time});
 		response.status(200).json(responseFormatter(true, 'Login successfully', [
 			{
 				user: {
 					_id: user._id,
-					name: `${user.fullName}`,
+					name: `${user.firstName} ${user.lastName}`,
 					email: user.email,
 					profileImage: user.profileImage,
 					role: user.role.name
 				}, 
-				token: token,
+				token: generateAccessToken(user),
+				refreshToken: generateRefreshToken(user)
 			}]));
 		return;
 	}
@@ -99,7 +133,7 @@ exports.forgetPassword = asyncHandler(async (request, response, next) => {
 		try {
 			const resetCode = Math.floor(100000 + Math.random() * 900000);
 			const message = `
-			<h3 style="color: black">Hi ${user.fullName}</h3>
+			<h3 style="color: black">Hi ${user.firstName} ${user.lastName}</h3>
 			<p style="color: black">We received a request to reset your password on your ${process.env.App_Name} account.</p>
 			<p style="color: black">This is your reset password code</p
 			<strong style="font-size: 18px">${resetCode}</strong>
@@ -168,3 +202,42 @@ exports.resetPassword = asyncHandler(async (request, response, next) => {
 		throw new APIError("This code expired, try to ask another code", 400);
 	}
 });
+
+// exports.refreshAccessToken = asyncHandler(async (request, response, next) => {
+// 	let {accessToken, refreshToken} = request.body;
+    
+// 	if(isTokenExpired(accessToken)) {
+// 		verifyRefreshToken(refreshToken);
+// 		const accessTokenPayload = decode(accessToken);
+// 		const user = await this.userService.findFirst({
+// 			where: {
+// 				email: {equals: accessTokenPayload.email, mode: 'insensitive'}
+// 			},
+// 			select: {
+// 				id: true,
+// 				firstName: true,
+// 				lastName: true,
+// 				email: true,
+// 				picture: true,
+// 				refreshToken: true
+// 			}
+// 		});
+
+// 		if(!user || user.refreshToken !== refreshToken) {
+// 			throw new APIError('Invalid tokens, try to login again', 400);
+// 		}
+
+// 		accessToken = generateAccessToken(user);
+
+// 		if(this.isRefreshTokenExpiredSoon(refreshToken)) {
+// 			refreshToken = generateRefreshToken(user);
+// 			await this.userService.update(user.id, {
+// 				refreshToken
+// 			});
+// 		};
+// 	}
+// 	response.status(200).json(responseFormatter(true, 'Your access token has been refreshed successfully.', [{
+// 		accessToken,
+// 		refreshToken
+// 	}]));
+// })

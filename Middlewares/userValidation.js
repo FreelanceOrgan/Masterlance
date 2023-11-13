@@ -7,15 +7,21 @@ const allowedMobilePhones = ['am-AM' , 'ar-AE' , 'ar-BH' , 'ar-DZ' , 'ar-EG' , '
 
 
 exports.addUserValidation = [
-	body("fullName")
-		.notEmpty().withMessage("Fullname is required")
-		.isString().withMessage("Fullname must be string")
-		.isLength({min: 3}).withMessage("Too short Fullname, 3 characters at least")
-		.isLength({max: 32}).withMessage("Too long Fullname, 32 characters at most"),
+	body("firstName")
+		.notEmpty().withMessage("Firstname is required")
+		.isString().withMessage("Firstname must be string")
+		.isLength({min: 3}).withMessage("Too short Firstname, 3 characters at least")
+		.isLength({max: 32}).withMessage("Too long Firstname, 32 characters at most"),
+	
+	body("lastName")
+		.notEmpty().withMessage("Lastname is required")
+		.isString().withMessage("Lastname must be string")
+		.isLength({min: 3}).withMessage("Too short Lastname, 3 characters at least")
+		.isLength({max: 32}).withMessage("Too long Lastname, 32 characters at most"),
 
 	body("email")
 		.notEmpty().withMessage("Email is required")
-		.matches(/[a-z0-9]+@[a-z]+\.[a-z]{2,3}/).withMessage("Invalid email")
+		.isEmail().withMessage("Invalid email")
 		.custom(async value => {
 			const user = await userModel.findOne({ email: value}, {_id: 1});
 			if(user) {
@@ -24,17 +30,31 @@ exports.addUserValidation = [
 			return true
 		}),
 
-    body("password")
+	body("password")
 		.notEmpty().withMessage("Password is required")
 		.matches(/^(?=.*[!@#$%^&*()])(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/).withMessage("Password must contain upper, lower characters, numbers and special characters"),
     
 	body("mobilePhone")
-		.optional()
-		.isMobilePhone(allowedMobilePhones),
-		
+		.notEmpty().withMessage("Mobile phone is required")
+		.isMobilePhone(allowedMobilePhones).withMessage("Invalid Mobile Phone")
+		.custom(async value => {
+			const isMobilePhoneExists = await userModel.findOne({mobilePhone: value});
+			if(isMobilePhoneExists) {
+				throw new Error('This mobile phone number already exists');
+			}
+			return true;
+		}),
+
 	body("whatsAPP")
-		.optional()
-		.isMobilePhone(allowedMobilePhones),
+		.notEmpty().withMessage("whatsAPP number is required")
+		.isMobilePhone(allowedMobilePhones).withMessage("Invalid WhatsApp number")
+		.custom(async value => {
+			const isWhatsAppExists = await userModel.findOne({whatsAPP: value});
+			if(isWhatsAppExists) {
+				throw new Error('This whatsApp number already exists');
+			}
+			return true;
+		}),
 	
 	body("registerFriendCode")
 		.optional()
@@ -48,7 +68,7 @@ exports.addUserValidation = [
 	
 	body("profileImage")
 		.optional()
-		.isURL().withMessage("Invalid Photo"),
+		.isURL().withMessage("Invalid Photo, must be a url"),
 
 	body("role")
 		.notEmpty().withMessage("Any user must have a role")
@@ -65,19 +85,39 @@ exports.addUserValidation = [
 ]
 
 exports.updateUserValidation = [
-	body("fullName")
+	body("firstName")
 		.optional()
-		.isString().withMessage("Fullname must be string")
-		.isLength({min: 3}).withMessage("Too short Fullname, 3 characters at least")
-		.isLength({max: 32}).withMessage("Too long Fullname, 32 characters at most"),
+		.isString().withMessage("Firstname must be string")
+		.isLength({min: 3}).withMessage("Too short Firstname, 3 characters at least")
+		.isLength({max: 32}).withMessage("Too long Firstname, 32 characters at most"),
+	
+	body("lastName")
+		.optional()
+		.isString().withMessage("Lastname must be string")
+		.isLength({min: 3}).withMessage("Too short Lastname, 3 characters at least")
+		.isLength({max: 32}).withMessage("Too long Lastname, 32 characters at most"),
 
 	body("mobilePhone")
 		.optional()
-		.isMobilePhone(allowedMobilePhones),
+		.isMobilePhone(allowedMobilePhones).withMessage("Invalid whatsApp number")
+		.custom(async (value, {req}) => {
+			const isMobilePhoneExists = await userModel.findOne({mobilePhone: value});
+			if(isMobilePhoneExists && isMobilePhoneExists._id !== req.user.id) {
+				throw new Error('This mobile phone number already exists');
+			}
+			return true;
+		}),
 	
 	body("whatsAPP")
 		.optional()
-		.isMobilePhone(allowedMobilePhones),
+		.isMobilePhone(allowedMobilePhones).withMessage("Invalid whatsApp number")
+		.custom(async (value, {req}) => {
+			const isWhatsAppExists = await userModel.findOne({whatsAPP: value});
+			if(isWhatsAppExists && isWhatsAppExists._id !== req.user.id) {
+				throw new Error('This whatsApp number already exists');
+			}
+			return true;
+		}),
 	
 	body("registerFriendCode")
 		.optional()
@@ -91,11 +131,11 @@ exports.updateUserValidation = [
 	
 	body("profileImage")
 		.optional()
-		.isURL().withMessage("Invalid Photo"),
-
+		.isURL().withMessage("Invalid Photo, must be a url"),
+	
 	body("verificationImage")
 		.optional()
-		.isURL().withMessage("Invalid Photo"),
+		.isURL().withMessage("Invalid Photo, must be a url"),
 
 	body("role")
 		.optional()

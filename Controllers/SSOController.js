@@ -60,7 +60,9 @@ exports.getUserInfoFromLinkedIn = asyncHandler(async (request, response, next) =
     tokenURL: process.env.Linkedin_Token_Url,
   }
   const {access_token, refresh_token} = await getAccessToken(code, platformInfo);
-  const data = await getUserData('https://api.linkedin.com/v2/userinfo', access_token);
+  // const data = await getUserData('https://api.linkedin.com/v2/userinfo', access_token);
+  const data = await getUserData('https://api.linkedin.com/v1/people/~/mailbox?folder=inbox&message-type=message-connections', access_token);
+  console.log(data);
   request.body = {
     fullName: data.name,
     email: data.email,
@@ -72,5 +74,5 @@ exports.getUserInfoFromLinkedIn = asyncHandler(async (request, response, next) =
     refreshToken: refresh_token,
     password: `M${crypto.randomUUID()}*`
   };
-  next();
+  // next();
 });
