@@ -1,7 +1,7 @@
 const express = require("express");
 
 const router = express.Router();
-const {authentication, authorization, allowClientRoleOnly} = require("../Services/authService");
+const {authentication, authorization, allowFreelancerRoleOnly} = require("../Services/authService");
 const {addLoginUserIdToRequestBody, addLoginUserIdToRequestQuery} = require("../Shared/addToRequest");
 const {idValidation} = require("../Middlewares/idValidation")
 const {addTransactionValidation, updateTransactionValidation} = require("../Middlewares/transactionValidation")
@@ -11,7 +11,7 @@ const {ModelNames} = require('../enums/ModelPermissions');
 router.route("/")
     .all(authentication, authorization(ModelNames.Transactions))
     .get(allowIsConfirmedTransactionsOnly, addLoginUserIdToRequestQuery("user"), getAllTransactions)
-    .post(allowClientRoleOnly, addLoginUserIdToRequestBody, addTransactionValidation, addTransaction)
+    .post(allowFreelancerRoleOnly, addLoginUserIdToRequestBody, addTransactionValidation, addTransaction)
 
 router.route("/:id")
     .all(authentication, authorization(ModelNames.Transactions), idValidation)
