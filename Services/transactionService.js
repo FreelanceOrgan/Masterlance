@@ -83,7 +83,7 @@ const sendSessionURL = (totalAmount, response) => {
 	const { PaypalClientId, PaypalSecretKey, PaypalMode } = process.env;
 
 	paypal.configure({
-		mode: PaypalMode, //sandbox or live
+		mode: PaypalMode,
 		client_id: PaypalClientId,
 		client_secret: PaypalSecretKey
 	});
@@ -119,7 +119,7 @@ const sendSessionURL = (totalAmount, response) => {
 	});
 }
 
-const deleteInConfirmedTransactions = (transactionId) => {
+const deleteUnConfirmedTransactions = (transactionId) => {
 	setTimeout(async () => {
 		const transaction = await transactionModel.findById(transactionId);
 		if(!transaction.isConfirmed) {
@@ -128,4 +128,4 @@ const deleteInConfirmedTransactions = (transactionId) => {
 	}, 1000 * 60 * 30) // 30 minutes 
 }
 
-module.exports = {createTransactionSession, isPayPalWebhookSignatureVerified, sendSessionURL, deleteInConfirmedTransactions}
+module.exports = {createTransactionSession, isPayPalWebhookSignatureVerified, sendSessionURL, deleteUnConfirmedTransactions}
