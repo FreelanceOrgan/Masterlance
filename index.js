@@ -15,7 +15,7 @@ let server = app.listen();
 
 dbConnection().then(() => {
 	server = app.listen(port, async () => {
-		console.log(`App is running at: http://localhost:${port}/`);
+		console.log(`App is running at: http://localhost:${port}`);
 	})
 })
 

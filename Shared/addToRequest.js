@@ -13,13 +13,13 @@ const addParentIdFromParamToRequestQuery = (parent, id) => (request, response, n
     next();
 }
 
-const addLoginUserIdToRequestBody = (request, response, next) => {
-    request.body.user = request.user.id;
+const addLoginUserIdToRequestBody = (fieldName) => (request, response, next) => {
+    request.body[fieldName] = request.user.id;
     next();
 }
 
 const addLoginUserIdToRequestQuery = (queryField) => (request, response, next) => {
-    if(request.user.role.name === 'Client') {
+    if(request.user.role.name === 'freelancer') {
         request.query[queryField] = request.user.id;
     }
     next();
