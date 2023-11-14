@@ -133,10 +133,6 @@ exports.updateUserValidation = [
 		.optional()
 		.isURL().withMessage("Invalid Photo, must be a url"),
 	
-	body("verificationImage")
-		.optional()
-		.isURL().withMessage("Invalid Photo, must be a url"),
-
 	body("role")
 		.optional()
 		.isInt().withMessage("Invalid Role")
@@ -165,6 +161,18 @@ exports.updateUserValidation = [
 		.isBoolean().withMessage("Deleted must be boolean"),
 		
     errorExpressValidatorHandler
+]
+
+exports.upsertNationalIdImagesVerification = [
+	body("nationalIdImage")
+		.notEmpty().withMessage('Your national Id image is required')
+		.isURL().withMessage("Invalid Photo, must be a url"),
+
+	body("selfieWithNationalIdImage")
+		.notEmpty().withMessage('You must take a selfie with your national Id')
+		.isURL().withMessage("Invalid Photo, must be a url"),
+
+		errorExpressValidatorHandler
 ]
 
 exports.changeEmailValidation = [

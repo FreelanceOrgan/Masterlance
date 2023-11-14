@@ -33,7 +33,10 @@ const freelancerSchema = mongoose.Schema(
       type: Number,
       default: 0
     },
-    verificationImage: {
+    nationalIdImage: {
+      type: String,
+    },
+    selfieWithNationalIdImage: {
       type: String,
     },
     isUserVerified: {

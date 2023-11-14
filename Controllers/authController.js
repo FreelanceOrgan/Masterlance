@@ -19,6 +19,24 @@ const generateReferralCode = () => {
 	return code;
 };
 
+// @desc    Check if refresh token will expired soon or not
+// @route   No
+// @access  No
+const isRefreshTokenExpiredSoon = (refreshToken) => {
+	if(!refreshToken) {
+		return true
+	}
+	const {exp} = decode(refreshToken);
+	if(exp) {
+		const secondsRemaining = exp - Math.floor(Date.now() / 1000);
+		const daysRemaining = Math.ceil(secondsRemaining / 86400); // 60 * 60 * 24 = 86400 sec per day
+		if(daysRemaining < 3) {
+			return true;
+		}
+	}
+	return false;
+}
+
 // @desc    Create referral code for each client user only will be added to Database
 // @route   No
 // @access  No
@@ -107,6 +125,12 @@ exports.login = asyncHandler(async (request, response, next) => {
 			user.available = true;
 			await user.save();
 		}
+
+		if(isRefreshTokenExpiredSoon(user.refreshToken)) {
+			user.refreshToken = generateRefreshToken(user);
+			await user.save()
+		}
+
 		response.status(200).json(responseFormatter(true, 'Login successfully', [
 			{
 				user: {
@@ -117,8 +141,8 @@ exports.login = asyncHandler(async (request, response, next) => {
 					role: user.role.name
 				}, 
 				token: generateAccessToken(user),
-				refreshToken: generateRefreshToken(user)
-			}]));
+				refreshToken: user.refreshToken
+		}]));
 		return;
 	}
 	next(new APIError('Your email or password may be incorrect', 403));
@@ -203,41 +227,31 @@ exports.resetPassword = asyncHandler(async (request, response, next) => {
 	}
 });
 
-// exports.refreshAccessToken = asyncHandler(async (request, response, next) => {
-// 	let {accessToken, refreshToken} = request.body;
-    
-// 	if(isTokenExpired(accessToken)) {
-// 		verifyRefreshToken(refreshToken);
-// 		const accessTokenPayload = decode(accessToken);
-// 		const user = await this.userService.findFirst({
-// 			where: {
-// 				email: {equals: accessTokenPayload.email, mode: 'insensitive'}
-// 			},
-// 			select: {
-// 				id: true,
-// 				firstName: true,
-// 				lastName: true,
-// 				email: true,
-// 				picture: true,
-// 				refreshToken: true
-// 			}
-// 		});
+// @desc    Refresh access token
+// @route   POST /auth/token/refresh
+// @access  Public
+exports.refreshAccessToken = asyncHandler(async (request, response, next) => {
+	let {accessToken, refreshToken} = request.body;
+	if(isTokenExpired(accessToken)) {
+		verifyRefreshToken(refreshToken);
+		const accessTokenPayload = decode(accessToken);
+		console.log(accessTokenPayload);
+		const user = await userModel.findById(accessTokenPayload.id);
 
-// 		if(!user || user.refreshToken !== refreshToken) {
-// 			throw new APIError('Invalid tokens, try to login again', 400);
-// 		}
+		if(!user || user.refreshToken !== refreshToken) {
+			throw new APIError('Invalid tokens, try to login again', 400);
+		}
 
-// 		accessToken = generateAccessToken(user);
+		accessToken = generateAccessToken(user);
 
-// 		if(this.isRefreshTokenExpiredSoon(refreshToken)) {
-// 			refreshToken = generateRefreshToken(user);
-// 			await this.userService.update(user.id, {
-// 				refreshToken
-// 			});
-// 		};
-// 	}
-// 	response.status(200).json(responseFormatter(true, 'Your access token has been refreshed successfully.', [{
-// 		accessToken,
-// 		refreshToken
-// 	}]));
-// })
+		if(isRefreshTokenExpiredSoon(refreshToken)) {
+			refreshToken = generateRefreshToken(user);
+			user.refreshToken = refreshToken;
+			await user.save();
+		};
+	}
+	response.status(200).json(responseFormatter(true, 'Your access token has been refreshed successfully.', [{
+		accessToken,
+		refreshToken
+	}]));
+})

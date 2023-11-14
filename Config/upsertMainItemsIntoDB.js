@@ -9,6 +9,10 @@ exports.upsertMainItemsIntoDB = async () => {
       permissions: [ModelPermissions.Read, ModelPermissions.Create, ModelPermissions.Update, ModelPermissions.Delete]
     },
     {
+      modelName: ModelNames.Tickets,
+      permissions: [ModelPermissions.Read, ModelPermissions.Create, ModelPermissions.Update, ModelPermissions.Delete]
+    },
+    {
       modelName: ModelNames.Transactions,
       permissions: [ModelPermissions.Read, ModelPermissions.Create, ModelPermissions.Update, ModelPermissions.Delete]
     },
@@ -25,7 +29,7 @@ exports.upsertMainItemsIntoDB = async () => {
       permissions: [ModelPermissions.Read, ModelPermissions.Create, ModelPermissions.Update, ModelPermissions.Delete]
     },
     {
-      modelName: ModelNames.Messages,
+      modelName: ModelNames.Tickets,
       permissions: [ModelPermissions.Read, ModelPermissions.Create, ModelPermissions.Update, ModelPermissions.Delete]
     },
   ];

@@ -50,19 +50,21 @@ exports.removePreviousUserProfileImage = asyncHandler(async (request, response, 
 // @access  Private
 exports.updateUserRole = updateDocument(userModel, 'User', "role");
 
-// @desc    Allow user to upload verification image
+// @desc    Allow user to upload verification images
 // @route   PATCH /user/:id/verify/image
 // @access  Private
-exports.upsertVerificationImage = asyncHandler(async (request, response, next) => {
+exports.upsertNationalIdImages = asyncHandler(async (request, response, next) => {
 	const {id} = request.params;
 	const user = await userModel.findById(id);
 	if(!user) {
 		throw new APIError('This user does not exist', 400);
 	}
-	user.freelancer.verificationImage = request.body.verificationImage;
+	user.freelancer.nationalIdImage = request.body.nationalIdImage;
+	user.freelancer.selfieWithNationalIdImage = request.body.selfieWithNationalIdImage;
 	await user.save();
 	response.status(200).json(responseFormatter(true, 'Your verification image has been uploaded successfully', [{
-		verificationImage: user.freelancer.verificationImage
+		nationalIdImage: user.freelancer.nationalIdImage,
+		selfieWithNationalIdImage: user.freelancer.selfieWithNationalIdImage
 	}]))
 })
 

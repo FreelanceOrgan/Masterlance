@@ -2,7 +2,7 @@ const ModelNames = {
   Users: 'users',
   Roles: 'roles',
   Transactions: 'transactions',
-  Messages: 'messages',
+  Tickets: 'tickets',
   Platforms: 'platforms',
 }
 

@@ -86,7 +86,7 @@ exports.signupValidation = [
 exports.loginValidation = [
 	body("email")
 		.notEmpty().withMessage("Email is required")
-		.matches(/[a-z0-9]+@[a-z]+\.[a-z]{2,3}/).withMessage("Invalid email"),
+		.isEmail().withMessage("Invalid email"),
 
     body("password")
 		.notEmpty().withMessage("Password is required"),
@@ -94,10 +94,20 @@ exports.loginValidation = [
 	errorExpressValidatorHandler
 ]
 
+exports.refreshAccessTokenValidation = [
+	body("accessToken")
+    .notEmpty().withMessage("Access token is required"),
+
+  body("refreshToken")
+		.notEmpty().withMessage("Refresh token is required"),
+
+	errorExpressValidatorHandler
+]
+
 exports.forgetPasswordValidation = [
 	body("email")
 		.notEmpty().withMessage("Email is required")
-		.matches(/[a-z0-9]+@[a-z]+\.[a-z]{2,3}/).withMessage("Invalid email"),
+		.isEmail().withMessage("Invalid email"),
 
 	errorExpressValidatorHandler
 ]
@@ -105,7 +115,7 @@ exports.forgetPasswordValidation = [
 exports.verifyResetPasswordCodeValidation = [
 	body("email")
 		.notEmpty().withMessage("Email is required")
-		.matches(/[a-z0-9]+@[a-z]+\.[a-z]{2,3}/).withMessage("Invalid email"),
+		.isEmail().withMessage("Invalid email"),
 
 	body("code")
 		.notEmpty().withMessage("Reset Code is required")
@@ -123,7 +133,7 @@ exports.verifyResetPasswordCodeValidation = [
 exports.resetPasswordValidation = [
 	body("email")
 		.notEmpty().withMessage("Email is required")
-		.matches(/[a-z0-9]+@[a-z]+\.[a-z]{2,3}/).withMessage("Invalid email"),
+		.isEmail().withMessage("Invalid email"),
 
 	body("newPassword")
 		.notEmpty().withMessage("New Password is required")
