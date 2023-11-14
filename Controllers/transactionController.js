@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const transactionModel = require("../Models/transactionModel")
-const {createTransactionSession, deleteInConfirmedTransactions} = require("../Services/transactionService");
+const {createTransactionSession, deleteUnConfirmedTransactions} = require("../Services/transactionService");
 const {getAllDocuments, getDocumentById, updateDocument, softDeleteDocument} = require("./Base/baseController");
 const responseFormatter = require('../ResponseFormatter/responseFormatter');
 
@@ -8,8 +8,8 @@ const responseFormatter = require('../ResponseFormatter/responseFormatter');
 // @route   No
 // @access  No
 exports.allowIsConfirmedTransactionsOnly = (request, response, next) => {
-    request.query.isConfirmed = true;
-    next();
+	request.query.isConfirmed = true;
+	next();
 }
 
 // @desc    Get All Transactions
@@ -35,7 +35,7 @@ exports.addTransaction = asyncHandler(async (request, response, next) => {
 	}
 	const createdTransaction = await transactionModel.create(request.body);
 	const createdSession = await createTransactionSession(createdTransaction._id, request.body.amount);
-	deleteInConfirmedTransactions(createdTransaction._id);
+	deleteUnConfirmedTransactions(createdTransaction._id);
 	response.status(201).json(responseFormatter(true, `Paypal payment session is created successfully`, [createdSession]));
 });
 

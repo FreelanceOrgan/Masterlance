@@ -1,5 +1,5 @@
 const transactionModel = require("../Models/transactionModel")
-const {verifyPayPalWebhookSignature: isPayPalWebhookSignatureVerified} = require("../Services/transactionService")
+const {isPayPalWebhookSignatureVerified} = require("../Services/transactionService")
 const APIError = require("../ErrorHandler/APIError");
 const responseFormatter = require("../ResponseFormatter/responseFormatter")
 
