@@ -62,7 +62,7 @@ exports.changeEmail = asyncHandler(async (request, response, next) => {
 
 exports.changePassword = asyncHandler(async (request, response, next) => {
 	const user = await userModel.findOne({_id: request.params.id, email: request.body.email});
-	if(user && await bcrypt.compare(request.body.currentPassword, user.password)) {
+	if(user && bcrypt.compareSync(request.body.currentPassword, user.password)) {
 		user.password = request.body.newPassword;
 		user.passwordUpdatedTime = Date.now();
 		await user.save();
