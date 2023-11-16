@@ -8,13 +8,13 @@ const {getAllTickets, getTicketById, sendTicket, replyOnTicket, deleteTicket} = 
 const {ModelNames} = require('../enums/ModelPermissions');
 
 router.route("/")
-    .get(authentication, authorization(ModelNames.Tickets), addLoginUserIdToRequestQuery('sendBy'), getAllTickets)
-    .post(authentication, authorization(ModelNames.Tickets), allowFreelancerRoleOnly, addLoginUserIdToRequestBody('sendBy'), sendTicketValidation, sendTicket)
+	.get(authentication, authorization(ModelNames.Tickets), addLoginUserIdToRequestQuery('sendBy'), getAllTickets)
+	.post(authentication, authorization(ModelNames.Tickets), allowFreelancerRoleOnly, addLoginUserIdToRequestBody('sendBy'), sendTicketValidation, sendTicket)
 
 router.route("/:id")
-    .all(authentication, authorization(ModelNames.Tickets), idValidation)
-    .get(getTicketById)
-    .patch(preventFreelancerRole, replyOnTicketValidation, replyOnTicket)
-    .delete(preventFreelancerRole, deleteTicket)
+	.all(authentication, authorization(ModelNames.Tickets), idValidation)
+	.get(getTicketById)
+	.patch(preventFreelancerRole, replyOnTicketValidation, replyOnTicket)
+	.delete(preventFreelancerRole, deleteTicket)
 
 module.exports = router;

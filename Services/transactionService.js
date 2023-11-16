@@ -55,8 +55,9 @@ const isPayPalWebhookSignatureVerified = async (request) =>{
 	const transmissionTime = request.headers['paypal-transmission-time'];
 	const certUrl = request.headers['paypal-cert-url'];
 	const transmissionSig = request.headers['paypal-transmission-sig'];
+	const {PaypalBaseURL, PaypalWebhookId} = process.env;
 	
-	const response = await fetch('https://api-m.sandbox.paypal.com/v1/notifications/verify-webhook-signature', {
+	const response = await fetch(`${PaypalBaseURL}/v1/notifications/verify-webhook-signature`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -68,7 +69,7 @@ const isPayPalWebhookSignatureVerified = async (request) =>{
 			cert_url: certUrl, 
 			auth_algo: authAlgo, 
 			transmission_sig: transmissionSig, 
-			webhook_id: process.env.PaypalWebhookId, 
+			webhook_id: PaypalWebhookId, 
 			webhook_event: request.body
 		})
 	});

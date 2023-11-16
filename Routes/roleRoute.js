@@ -8,15 +8,14 @@ const {authentication, authorization} = require("../Services/authService");
 const {ModelNames} = require('../enums/ModelPermissions');
 
 router.route("/")
-    .all(authentication, authorization(ModelNames.Roles))
-    .get(getAllRoles)
-    .post(addRoleValidation, addRole)
+	.all(authentication, authorization(ModelNames.Roles))
+	.get(getAllRoles)
+	.post(addRoleValidation, addRole)
 
 router.route("/:id")
-    .all(authentication, authorization(ModelNames.Roles), idValidation)
-    .get(getRoleById)
-    .patch(updateRoleValidation, updateRole)
-    .delete(deleteRoleValidation, deleteRole)
-
+	.all(authentication, authorization(ModelNames.Roles), idValidation)
+	.get(getRoleById)
+	.patch(updateRoleValidation, updateRole)
+	.delete(deleteRoleValidation, deleteRole)
 
 module.exports = router;

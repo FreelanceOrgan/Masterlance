@@ -21,7 +21,7 @@ exports.getAccessToken = async (code, platformInfo) => {
     throw new APIError(response.statusText, response.status);
   }
   return await response.json();
-}
+};
 
 exports.getUserData = async (scopeURL, access_token) => {
   const response = await fetch(scopeURL, {
@@ -35,4 +35,4 @@ exports.getUserData = async (scopeURL, access_token) => {
     throw new APIError(response.statusText, response.status);
   }
   return await response.json();
-}
+};

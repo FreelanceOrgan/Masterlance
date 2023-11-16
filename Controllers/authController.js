@@ -6,22 +6,6 @@ const {sendEmail} = require("../Services/sendEmailService");
 const responseFormatter = require("../ResponseFormatter/responseFormatter");
 const APIError = require("../ErrorHandler/APIError");
 
-// @desc    Generate random Referral Code 
-// @route   No
-// @access  No
-const generateReferralCode = () => {
-	const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	let code = '';
-	for (let i = 0; i < 4; i++) {
-		const randomIndex = Math.floor(Math.random() * characters.length);
-		code += characters[randomIndex];
-	}
-	return code;
-};
-
-// @desc    Check if refresh token will expired soon or not
-// @route   No
-// @access  No
 const isRefreshTokenExpiredSoon = (refreshToken) => {
 	if(!refreshToken) {
 		return true
@@ -35,43 +19,41 @@ const isRefreshTokenExpiredSoon = (refreshToken) => {
 		}
 	}
 	return false;
-}
-
-// @desc    Create referral code for each client user only will be added to Database
-// @route   No
-// @access  No
-exports.createReferralCode = async (request, response, next) => {
-	let isReferralCodeCreated = false;
-	do {
-		const referralCode = generateReferralCode()
-		const isExist = await userModel.findOne({"freelancer.referralCode": referralCode});
-		if(!isExist) {
-			request.body.referralCode = referralCode;
-			isReferralCodeCreated = true;
-		}
-	}while(!isReferralCodeCreated);
-	next();
 };
 
-// @desc    Increase the points of friend when use his referral code during registration
-// @route   No
-// @access  No
-exports.increaseRegisterFriendPoints = async (request, response, next) => {
-	if(request.body.registerFriendCode) {
-		const friend = await userModel.findOne({"freelancer.referralCode": request.body.registerFriendCode}, {freelancer: 1});
+const generateReferralCode = () => {
+	const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	let code = '';
+	for (let i = 0; i < 4; i++) {
+		const randomIndex = Math.floor(Math.random() * characters.length);
+		code += characters[randomIndex];
+	}
+	return code;
+};
+
+const createReferralCode = async () => {
+	const referralCode = generateReferralCode()
+	const isExist = await userModel.findOne({"freelancer.referralCode": referralCode});
+	if(!isExist) {
+		return referralCode;
+	}
+	await createReferralCode();
+};
+
+const increaseRegisterFriendPoints = async (registerFriendCode) => {
+	if(registerFriendCode) {
+		const friend = await userModel.findOne({"freelancer.referralCode": registerFriendCode}, {freelancer: 1});
 		if(friend) {
 			friend.freelancer.points += 1;
-			friend.save();
+			await friend.save();
 		}
 	}
-	next();
 };
 
-// @desc    Signup
-// @route   POST /auth/signup
-// @access  Public
 exports.signup = asyncHandler(async (request, response, next) => {
-	const {firstName, lastName, email, password, mobilePhone, whatsAPP, timeZone, profileImage, referralCode, role} = request.body;
+	const {firstName, lastName, email, password, mobilePhone, whatsAPP, timeZone, profileImage, registerFriendCode, role} = request.body;
+	increaseRegisterFriendPoints(registerFriendCode);
+	const referralCode = await createReferralCode();
 	const user = await userModel.create({
 		firstName,
 		lastName,
@@ -104,12 +86,9 @@ exports.signup = asyncHandler(async (request, response, next) => {
 		},
 		token: generateAccessToken(user),
 		refreshToken: user.refreshToken
-	}]))
-})
+	}]));
+});
 
-// @desc    Login
-// @route   POST /auth/login
-// @access  Public
 exports.login = asyncHandler(async (request, response, next) => {        
 	const user = await userModel.findOne({email: request.body.email}, {__v: 0, createdAt: 0, updatedAt: 0});
 	if(user && (user.provider === request.body.provider || bcrypt.compareSync(request.body.password, user.password))) {
@@ -148,9 +127,6 @@ exports.login = asyncHandler(async (request, response, next) => {
 	next(new APIError('Your email or password may be incorrect', 403));
 });
 
-// @desc    Forget Password
-// @route   POST /auth/password/forget
-// @access  Public
 exports.forgetPassword = asyncHandler(async (request, response, next) => {
 	const user = await userModel.findOne({ email: request.body.email });
 	if(user) {
@@ -183,9 +159,6 @@ exports.forgetPassword = asyncHandler(async (request, response, next) => {
 	response.status(200).json(responseFormatter(true, 'If your email is found, you will receive a reset code to reset your password'));
 });
 
-// @desc    Verify Reset Password Code
-// @route   POST /auth/password/verify
-// @access  Public
 exports.verifyResetPasswordCode = asyncHandler(async (request, response, next) => {
 	const user = await userModel.findOne({email: request.body.email}, {email: 1, resetPasswordCode: 1})
 	if(user) {
@@ -203,9 +176,6 @@ exports.verifyResetPasswordCode = asyncHandler(async (request, response, next) =
 	}
 });
 
-// @desc    Verify Reset Password
-// @route   POST /auth/password/reset
-// @access  Public
 exports.resetPassword = asyncHandler(async (request, response, next) => {
 	const user = await userModel.findOne({email: request.body.email}, {email: 1, resetPasswordCode: 1})
 	if(user) {
@@ -227,9 +197,6 @@ exports.resetPassword = asyncHandler(async (request, response, next) => {
 	}
 });
 
-// @desc    Refresh access token
-// @route   POST /auth/token/refresh
-// @access  Public
 exports.refreshAccessToken = asyncHandler(async (request, response, next) => {
 	let {accessToken, refreshToken} = request.body;
 	if(isTokenExpired(accessToken)) {
@@ -254,4 +221,4 @@ exports.refreshAccessToken = asyncHandler(async (request, response, next) => {
 		accessToken,
 		refreshToken
 	}]));
-})
+});
