@@ -9,14 +9,14 @@ const {getAllTransactions, allowIsConfirmedTransactionsOnly, getTransactionById,
 const {ModelNames} = require('../enums/ModelPermissions');
 
 router.route("/")
-    .all(authentication, authorization(ModelNames.Transactions))
-    .get(allowIsConfirmedTransactionsOnly, addLoginUserIdToRequestQuery("user"), getAllTransactions)
-    .post(allowFreelancerRoleOnly, addLoginUserIdToRequestBody('user'), addTransactionValidation, addTransaction)
+	.all(authentication, authorization(ModelNames.Transactions))
+	.get(allowIsConfirmedTransactionsOnly, addLoginUserIdToRequestQuery("user"), getAllTransactions)
+	.post(allowFreelancerRoleOnly, addLoginUserIdToRequestBody('user'), addTransactionValidation, addTransaction)
 
 router.route("/:id")
-    .all(authentication, authorization(ModelNames.Transactions), idValidation)
-    .get(getTransactionById)
-    .patch(updateTransactionValidation, updateTransaction)
-    .delete(deleteTransaction)
+	.all(authentication, authorization(ModelNames.Transactions), idValidation)
+	.get(getTransactionById)
+	.patch(updateTransactionValidation, updateTransaction)
+	.delete(deleteTransaction)
 
 module.exports = router;

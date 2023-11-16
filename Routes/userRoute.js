@@ -1,7 +1,7 @@
 const express = require("express");
 
 const router = express.Router();
-const {getAllUsers, getUserById, addUser, updateUser, updateUserRole, upsertNationalIdImages, upsertVerificationStatus, blockUser, changeEmail, changePassword, deleteUser} = require("../Controllers/userController");
+const {getAllUsers, getUserById, addUser, updateUser, updateUserRole, upsertNationalIdImages, upsertVerificationStatus, changeEmail, changePassword, blockUser, deleteUser} = require("../Controllers/userController");
 const {idValidation} = require("../Middlewares/idValidation")
 const {addUserValidation, updateUserValidation, upsertNationalIdImagesVerification, changeEmailValidation, changePasswordValidation} = require("../Middlewares/userValidation")
 const {authentication, authorization, preventFreelancerRole, checkParamIdEqualTokenId} = require("../Services/authService");
@@ -20,7 +20,7 @@ router.route("/:id")
     
 router.route("/:id/verify/image")
 	.patch(authentication, authorization(ModelNames.Users), checkParamIdEqualTokenId("id"), upsertNationalIdImagesVerification, upsertNationalIdImages);
-    
+
 router.route("/:id/verify/status")
 	.patch(authentication, authorization(ModelNames.Users), preventFreelancerRole, updateUserValidation, upsertVerificationStatus);
 

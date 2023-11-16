@@ -5,36 +5,18 @@ const APIError = require("../ErrorHandler/APIError");
 const userModel = require("../Models/userModel");
 const {getAllDocuments, getDocumentById, addDocument, updateDocument, softDeleteDocument} = require("./Base/baseController");
 
-// @desc    Get All users
-// @route   GET /user
-// @access  Public
 const searchFields = ["firstName", "lastName", "email", "mobilePhone", "whatsAPP", "role"];
 exports.getAllUsers = getAllDocuments(userModel, 'Users', ...searchFields);
 
-// @desc    Get User by ID
-// @route   GET /user/:id
-// @access  Public
 exports.getUserById = getDocumentById(userModel, 'User');
 
-// @desc    Signup
-// @route   POST /User
-// @access  Public
 exports.addUser = addDocument(userModel, 'User');
 
-// @desc    Update User
-// @route   PATCH /user/:id
-// @access  Private
-const fieldsThatAllowToUpdate = ["firstName", "lastName", "mobilePhone", "whatsAPP", "profileImage", "available"];
-exports.updateUser = updateDocument(userModel, 'User', ...fieldsThatAllowToUpdate);
+const allowedFieldsToUpdate = ["firstName", "lastName", "mobilePhone", "whatsAPP", "profileImage", "available"];
+exports.updateUser = updateDocument(userModel, 'User', ...allowedFieldsToUpdate);
 
-// @desc    Update User
-// @route   PATCH /user/:id/role
-// @access  Private
 exports.updateUserRole = updateDocument(userModel, 'User', "role");
 
-// @desc    Allow user to upload verification images
-// @route   PATCH /user/:id/verify/image
-// @access  Private
 exports.upsertNationalIdImages = asyncHandler(async (request, response, next) => {
 	const {id} = request.params;
 	const user = await userModel.findById(id);
@@ -44,15 +26,12 @@ exports.upsertNationalIdImages = asyncHandler(async (request, response, next) =>
 	user.freelancer.nationalIdImage = request.body.nationalIdImage;
 	user.freelancer.selfieWithNationalIdImage = request.body.selfieWithNationalIdImage;
 	await user.save();
-	response.status(200).json(responseFormatter(true, 'Your verification image has been uploaded successfully', [{
+	response.status(200).json(responseFormatter(true, 'Your verification images are uploaded successfully', [{
 		nationalIdImage: user.freelancer.nationalIdImage,
 		selfieWithNationalIdImage: user.freelancer.selfieWithNationalIdImage
 	}]))
-})
+});
 
-// @desc    Update User verification status
-// @route   PATCH /user/:id/verify/status
-// @access  Private
 exports.upsertVerificationStatus = asyncHandler(async (request, response, next) => {
 	const {id} = request.params;
 	const user = await userModel.findById(id);
@@ -61,47 +40,36 @@ exports.upsertVerificationStatus = asyncHandler(async (request, response, next) 
 	}
 	user.freelancer.isUserVerified = request.body.isUserVerified;
 	await user.save();
-	response.status(200).json(responseFormatter(true, 'User verification status has been updated successfully', [{
+	response.status(200).json(responseFormatter(true, 'User verification status is updated successfully', [{
 		isUserVerified: user.freelancer.isUserVerified
 	}]))
-})
+});
 
-// @desc    Block User
-// @route   PATCH /user/:id
-// @access  Private
 exports.blockUser = updateDocument(userModel, 'User', "blocked");
 
-// @desc    Change Email
-// @route   PATCH /user/:id/update/email
-// @access  Private
 exports.changeEmail = asyncHandler(async (request, response, next) => {
-    const user = await userModel.findOne({_id: request.params.id, email: request.body.currentEmail}, {password: 1});
-    if(user && bcrypt.compareSync(request.body.password, user.password)){
-        user.email = request.body.newEmail;
-        user.password = request.body.password;
-        await user.save();
-        response.status(200).json(responseFormatter(true, 'Your Email is updated successfully, please login again.')); // generate token and send it
-        return;
-    }
-    next(new APIError('Your email or password may be incorrect', 400));
-})
+	const user = await userModel.findOne({_id: request.params.id, email: request.body.currentEmail}, {password: 1});
+	if(user && bcrypt.compareSync(request.body.password, user.password)){
+		user.email = request.body.newEmail;
+		user.password = request.body.password;
+		user.passwordUpdatedTime = Date.now();
+		await user.save();
+		response.status(200).json(responseFormatter(true, 'Your email is updated successfully, please login again.')); // generate token and send it
+		return;
+	}
+	next(new APIError('Your email or password may be incorrect', 400));
+});
 
-// @desc    Change Password
-// @route   PATCH /user/:id/update/password
-// @access  Private
 exports.changePassword = asyncHandler(async (request, response, next) => {
-    const user = await userModel.findOne({_id: request.params.id, email: request.body.email});
-    if(user && await bcrypt.compare(request.body.currentPassword, user.password)) {
-        user.password = request.body.newPassword;
-        user.passwordUpdatedTime = Date.now();
-        await user.save();
-        response.status(200).json(responseFormatter(true, 'Your Password is updated successfully, please login again.')); // generate token and send it
-        return;
-    }
-    next(new APIError('Your email or password may be incorrect', 400));
-})
+	const user = await userModel.findOne({_id: request.params.id, email: request.body.email});
+	if(user && bcrypt.compareSync(request.body.currentPassword, user.password)) {
+		user.password = request.body.newPassword;
+		user.passwordUpdatedTime = Date.now();
+		await user.save();
+		response.status(200).json(responseFormatter(true, 'Your Password is updated successfully, please login again.')); // generate token and send it
+		return;
+	}
+	next(new APIError('Your email or password may be incorrect', 400));
+});
 
-// @desc    Delete User
-// @route   DELETE /api/v1/user/:id
-// @access  Private
 exports.deleteUser = softDeleteDocument(userModel, 'User');

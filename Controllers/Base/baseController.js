@@ -33,9 +33,9 @@ asyncHandler(async (request, response) => {
 	response.status(201).json(responseFormatter(true, `The ${modelName} is added successfully`, [document]));
 })
 
-exports.updateDocument = (model, modelName = 'Item', ...fieldsThatAllowToUpdate) => 
+exports.updateDocument = (model, modelName = 'Item', ...allowedFieldsToUpdate) => 
 asyncHandler(async (request, response, next) => {
-	const targetFields = updatedFields(request, fieldsThatAllowToUpdate);
+	const targetFields = updatedFields(request, allowedFieldsToUpdate);
 	if(Object.keys(targetFields).length > 0) { 
 		const updatedDocument = await model.findOneAndUpdate({_id: request.params.id}, targetFields, {new: true})
 		if(!updatedDocument) {

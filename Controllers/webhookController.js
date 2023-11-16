@@ -11,12 +11,12 @@ exports.confirmTransaction = async (request, response, next) => {
 			if(!transaction.isConfirmed) {
 				transaction.isConfirmed = true;
 				await transaction.save();
-				response.status(200).json(responseFormatter(true, "Your transaction request has been confirmed successfully.", [transaction]));
+				response.status(200).json(responseFormatter(true, "The transaction request has been confirmed successfully.", [transaction]));
 				return;
 			}
-			response.status(200).json(responseFormatter(false, "Your transaction request is already confirmed", [transaction]));
+			response.status(200).json(responseFormatter(false, "The transaction request is already confirmed", [transaction]));
 			return;
 		}
 	}
-	throw new APIError("Your signature is not valid", 400);
+	throw new APIError("The signature is not valid", 400);
 };

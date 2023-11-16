@@ -5,25 +5,13 @@ const {sendEmail} = require("../Services/sendEmailService");
 const APIError = require("../ErrorHandler/APIError");
 const responseFormatter = require("../ResponseFormatter/responseFormatter");
 
-// @desc    Get All messages
-// @route   GET /message
-// @access  Private
 const searchFields = ['title', 'description', 'sendBy', 'repliedBy'];
 exports.getAllTickets = getAllDocuments(ticketModel, 'Tickets', ...searchFields);
 
-// @desc    Get message by ID
-// @route   GET message/:id
-// @access  Private
 exports.getTicketById = getDocumentById(ticketModel, 'Ticket');
 
-// @desc    Send message
-// @route   POST /message
-// @access  Private
 exports.sendTicket = addDocument(ticketModel, 'Ticket');
 
-// @desc    Reply on message
-// @route   PATCH /message/:id
-// @access  Private
 exports.replyOnTicket = asyncHandler(async (request, response, next) => {
   const ticket = await ticketModel.findById(request.params.id);
   if(!ticket) {
@@ -35,9 +23,6 @@ exports.replyOnTicket = asyncHandler(async (request, response, next) => {
   ticket.isReplied = true;
   await ticket.save();
   response.status(200).json(responseFormatter(true, "Your reply has been sent successfully", [ticket]));
-})
+});
 
-// @desc    Delete message
-// @route   DELETE /message/:id
-// @access  Private
 exports.deleteTicket = hardDeleteDocument(ticketModel, 'Ticket');

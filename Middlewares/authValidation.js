@@ -31,7 +31,8 @@ exports.signupValidation = [
 
     body("password")
 		.notEmpty().withMessage("Password is required")
-		.matches(/^(?=.*[!@#$%^&*()])(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/).withMessage("Password must contain upper, lower characters, numbers and special characters"),
+		.isString().withMessage("Password must be a string")
+		.isLength({min: 8}).withMessage("Too short password, 8 characters at least"),
     
 	body("mobilePhone")
 		.notEmpty().withMessage("Mobile phone is required")
@@ -137,7 +138,8 @@ exports.resetPasswordValidation = [
 
 	body("newPassword")
 		.notEmpty().withMessage("New Password is required")
-		.matches(/^(?=.*[!@#$%^&*()])(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/).withMessage("Password must contain upper, lower characters, numbers and special characters"),
-
+		.isString().withMessage("Password must be a string")
+		.isLength({min: 8}).withMessage("Too short password, 8 characters at least"),
+		
 	errorExpressValidatorHandler
 ]

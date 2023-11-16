@@ -1,7 +1,7 @@
 const JWT = require("jsonwebtoken");
 
-const accessTokenSecretKey = process.env.JWT_Access_Token_Secret_Key || '';
-const refreshTokenSecretKey = process.env.JWT_Refresh_Token_Secret_Key || '';
+const accessTokenSecretKey = process.env.JWT_Access_Token_Secret_Key;
+const refreshTokenSecretKey = process.env.JWT_Refresh_Token_Secret_Key;
 
 exports.generateAccessToken = (user) => {
   const {_id, firstName, lastName, email, profileImage, role} = user;

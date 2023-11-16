@@ -8,14 +8,14 @@ const SSORoute = require("./Routes/SSORoute");
 const platformsRoute = require("./Routes/platformsRoute");
 
 const mountRoutes = (app, apiVersion) => {
-    app.use(`${apiVersion}/auth`, authRoute);
-    app.use(`${apiVersion}/roles`, roleRoute);
-    app.use(`${apiVersion}/users`, userRoute);
-    app.use(`${apiVersion}/transactions`, transactionRoute);
-    app.use(`${apiVersion}/webhooks`, webhookRoute);
-    app.use(`${apiVersion}/tickets`, ticketRoute);
-    app.use(`${apiVersion}/sso`, SSORoute);
-    app.use(`${apiVersion}/platforms`, platformsRoute);
+	app.use(`${apiVersion}/auth`, authRoute);
+	app.use(`${apiVersion}/roles`, roleRoute);
+	app.use(`${apiVersion}/users`, userRoute);
+	app.use(`${apiVersion}/transactions`, transactionRoute);
+	app.use(`${apiVersion}/webhooks`, webhookRoute);
+	app.use(`${apiVersion}/tickets`, ticketRoute);
+	app.use(`${apiVersion}/sso`, SSORoute);
+	app.use(`${apiVersion}/platforms`, platformsRoute);
 }
 
 module.exports = mountRoutes;
