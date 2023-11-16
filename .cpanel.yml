@@ -1,0 +1,8 @@
+---
+deployment:
+  tasks:
+    - npm install --production  # Install Node.js dependencies (excluding devDependencies)
+    - export DEPLOY_DIR: /home/user/public_html  # Destination directory
+    - /bin/cp -R * $DEPLOY_DIR  # Copy files to the deployment directory
+    - cd $DEPLOY_DIR  # Navigate to the deployment directory
+    - node app.js  # Start the Node.js application
